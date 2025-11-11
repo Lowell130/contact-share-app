@@ -1,0 +1,169 @@
+{
+  "info": {
+    "name": "Contact Share API",
+    "_postman_id": "a1b2c3d4-e5f6-7788-9900-abcdef123456",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "access",
+      "value": ""
+    },
+    {
+      "key": "refresh",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth Register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/register",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"dev@example.com\",\"password\":\"test123\",\"name\":\"Dev\"}"
+        }
+      }
+    },
+    {
+      "name": "Auth Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/login",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"email\":\"dev@example.com\",\"password\":\"test123\"}"
+        }
+      }
+    },
+    {
+      "name": "Refresh",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/refresh",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"token\":\"{{refresh}}\"}"
+        }
+      }
+    },
+    {
+      "name": "Me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/me"
+      }
+    },
+    {
+      "name": "Cards Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/cards",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\":\"Stefano P.\",\"slug\":\"stefano\",\"fields\":[{\"type\":\"email\",\"label\":\"Email\",\"value\":\"stefano@example.com\",\"visible\":true}],\"is_public\":true,\"allow_vcard\":true}"
+        }
+      }
+    },
+    {
+      "name": "Cards List",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/cards"
+      }
+    },
+    {
+      "name": "Public Card by slug",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/cards/stefano"
+      }
+    },
+    {
+      "name": "Analytics Summary",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          }
+        ],
+        "url": "{{baseUrl}}/analytics/cards/:id/summary"
+      }
+    },
+    {
+      "name": "Share Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{access}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/share",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"card_id\":\":id\",\"expires_minutes\":60}"
+        }
+      }
+    },
+    {
+      "name": "Share Resolve",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/share/s/:slug"
+      }
+    }
+  ]
+}
