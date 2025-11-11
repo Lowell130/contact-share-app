@@ -5,6 +5,7 @@
     <NuxtLink to="/cards" class="underline">Gestisci le tue card</NuxtLink>
   </section>
 </template>
+
 <script setup>
 import { onMounted } from 'vue'
 const { fetchMe } = useAuth()
