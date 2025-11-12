@@ -5,7 +5,7 @@
         <div class="w-full sm:w-[500px] p-4 bg-white sm:p-6 dark:bg-gray-800 mx-auto">
           <div class="flex flex-col items-center pb-3">
             <img class="w-40 h-40 mb-3 rounded-full shadow-lg" src="/assets/images/profile-picture-3.jpg" alt="Bonnie image"/>
-            <h5 class="mb-4 text-3xl font-semibold text-gray-900 dark:text-white">{{card.title}}</h5>
+            <h5 class="mb-4 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{card.title}}</h5>
             <span v-if="subtitle" class="bg-yellow-100 text-yellow-800 shadow text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300 mb-2">{{ subtitle }}</span>
 
        <!-- <div class="flex mt-4 md:mt-6">
