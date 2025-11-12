@@ -18,6 +18,7 @@
           placeholder="Breve presentazione/claim sotto al titolo…"
         />
       </div>
+      
     </div>
 
     <div class="space-y-3">
@@ -85,6 +86,21 @@
       </label>
     </div>
 
+    <!-- aggiungi subito sopra il bottone Salva -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+    <label class="block text-sm font-medium mb-1">Tema grafico</label>
+    <select v-model="form.theme" class="border p-2 w-full rounded">
+      <option disabled value="">Scegli un tema...</option>
+      <option value="minimal">Minimal</option>
+      <option value="gradient">Colorful Gradient</option>
+      <option value="dark">Dark Tech</option>
+      <option value="flowbite">Flowbite Card</option> <!-- NEW -->
+    </select>
+  </div>
+</div>
+
+
     <button class="px-4 py-2 bg-black text-white rounded">Salva</button>
   </form>
 </template>
@@ -125,10 +141,12 @@ const form = reactive({
   title: props.modelValue.title || '',
   slug: props.modelValue.slug || '',
   bio:  props.modelValue.bio  || props.modelValue.notes || '',
+  theme: props.modelValue.theme || 'minimal',
   fields: Array.isArray(props.modelValue.fields) ? JSON.parse(JSON.stringify(props.modelValue.fields)) : [],
   is_public: props.modelValue.is_public ?? true,
   allow_vcard: props.modelValue.allow_vcard ?? true
 })
+
 
 watch(form, () => emit('update:modelValue', form), { deep: true })
 
@@ -168,6 +186,7 @@ const onSubmit = () => {
     title: (form.title || '').trim(),
     slug: (form.slug || '').trim(),
     notes: (form.bio || '').trim(),
+    theme: (form.theme || 'minimal'),
     is_public: !!form.is_public,
     allow_vcard: !!form.allow_vcard,
     fields: (form.fields || [])

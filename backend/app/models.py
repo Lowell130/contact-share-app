@@ -33,7 +33,8 @@ class CardIn(BaseModel):
     title: str
     slug: Optional[str] = None
     fields: List[CardField] = []
-    theme: Optional[dict] = None
+    # theme prima era Optional[dict]; ora è una stringa ammessa con default "minimal"
+    theme: Optional[Literal["minimal", "gradient", "dark", "flowbite"]] = "minimal"  # <-- aggiunto flowbite
     avatar_url: Optional[str] = None
     is_public: bool = True
     allow_vcard: bool = True

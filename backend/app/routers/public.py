@@ -27,6 +27,7 @@ async def public_card(slug: str, request: Request):
         "id": c["id"],
         "slug": c["slug"],
         "title": c.get("title"),
+        "notes": c.get("notes", ""),              # <-- AGGIUNTO
         "fields": c.get("fields", []),
         "theme": c.get("theme"),
         "avatar_url": c.get("avatar_url"),
