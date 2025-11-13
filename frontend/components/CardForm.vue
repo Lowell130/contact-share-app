@@ -106,35 +106,144 @@
 </template>
 
 <script setup>
-const FIELD_TYPES = [
-  { value: 'email',     label: 'Email',      placeholder: 'nome@dominio.it' },
-  { value: 'mobile',    label: 'Cellulare',  placeholder: '+39 3xx xxx xxxx' },
-  { value: 'phone',     label: 'Telefono',   placeholder: '+39 0xx xxx xxxx' },
-  { value: 'url',       label: 'Sito web',   placeholder: 'https://example.com' },
-  { value: 'linkedin',  label: 'LinkedIn',   placeholder: 'https://www.linkedin.com/in/username' },
-  { value: 'instagram', label: 'Instagram',  placeholder: 'https://instagram.com/username' },
-  { value: 'x',         label: 'X (Twitter)',placeholder: 'https://x.com/username' },
-  { value: 'facebook',  label: 'Facebook',   placeholder: 'https://facebook.com/username' },
-  { value: 'whatsapp',  label: 'WhatsApp',   placeholder: 'https://wa.me/39333xxxxxxx' },
-  { value: 'telegram',  label: 'Telegram',   placeholder: 'https://t.me/username' },
-  { value: 'github',    label: 'GitHub',     placeholder: 'https://github.com/username' },
-  { value: 'youtube',   label: 'YouTube',    placeholder: 'https://youtube.com/@channel' },
-  { value: 'tiktok',    label: 'TikTok',     placeholder: 'https://tiktok.com/@username' },
-  { value: 'twitch',    label: 'Twitch',     placeholder: 'https://twitch.tv/username' },
-  { value: 'onlyfans',  label: 'OnlyFans',   placeholder: 'https://onlyfans.com/username' },
-  { value: 'strava',    label: 'Strava',     placeholder: 'https://www.strava.com/athletes/12345' },
-  { value: 'company',   label: 'Azienda',    placeholder: 'Ragione sociale' },
-  { value: 'role',      label: 'Ruolo',      placeholder: 'es. Product Manager' },
-  { value: 'address',   label: 'Indirizzo',  placeholder: 'Via Esempio 1, Roma' },
-  { value: 'note',      label: 'Note',       placeholder: 'Testo libero' }
-]
+import { reactive, ref, watch } from 'vue'
 
-const defaultField = (type = 'email') => {
-  const meta = FIELD_TYPES.find(t => t.value === type) || FIELD_TYPES[0]
-  return { type: meta.value, label: meta.label, value: '', visible: true }
+/* --------------------------------
+ * CONFIG UNICA PER I CAMPI
+ * -------------------------------- */
+const FIELD_CONFIG = {
+  email: {
+    label: 'Email',
+    placeholder: 'nome@dominio.it',
+    urlLike: false
+  },
+  mobile: {
+    label: 'Cellulare',
+    placeholder: '+39 3xx xxx xxxx',
+    urlLike: false
+  },
+  phone: {
+    label: 'Telefono',
+    placeholder: '+39 0xx xxx xxxx',
+    urlLike: false
+  },
+  url: {
+    label: 'Sito web',
+    placeholder: 'https://example.com',
+    urlLike: true
+  },
+  linkedin: {
+    label: 'LinkedIn',
+    placeholder: 'https://www.linkedin.com/in/username',
+    urlLike: true
+  },
+  instagram: {
+    label: 'Instagram',
+    placeholder: 'https://instagram.com/username',
+    urlLike: true
+  },
+  x: {
+    label: 'X (Twitter)',
+    placeholder: 'https://x.com/username',
+    urlLike: true
+  },
+  facebook: {
+    label: 'Facebook',
+    placeholder: 'https://facebook.com/username',
+    urlLike: true
+  },
+  whatsapp: {
+    label: 'WhatsApp',
+    placeholder: 'https://wa.me/39333xxxxxxx',
+    urlLike: true
+  },
+  telegram: {
+    label: 'Telegram',
+    placeholder: 'https://t.me/username',
+    urlLike: true
+  },
+  github: {
+    label: 'GitHub',
+    placeholder: 'https://github.com/username',
+    urlLike: true
+  },
+  youtube: {
+    label: 'YouTube',
+    placeholder: 'https://youtube.com/@channel',
+    urlLike: true
+  },
+  tiktok: {
+    label: 'TikTok',
+    placeholder: 'https://tiktok.com/@username',
+    urlLike: true
+  },
+  twitch: {
+    label: 'Twitch',
+    placeholder: 'https://twitch.tv/username',
+    urlLike: true
+  },
+  onlyfans: {
+    label: 'OnlyFans',
+    placeholder: 'https://onlyfans.com/username',
+    urlLike: true
+  },
+  strava: {
+    label: 'Strava',
+    placeholder: 'https://www.strava.com/athletes/12345',
+    urlLike: true
+  },
+  company: {
+    label: 'Azienda',
+    placeholder: 'Ragione sociale',
+    urlLike: false
+  },
+  role: {
+    label: 'Ruolo',
+    placeholder: 'es. Product Manager',
+    urlLike: false
+  },
+  address: {
+    label: 'Indirizzo',
+    placeholder: 'Via Esempio 1, Roma',
+    urlLike: false
+  },
+  note: {
+    label: 'Note',
+    placeholder: 'Testo libero',
+    urlLike: false
+  }
 }
 
-const props = defineProps({ modelValue: { type: Object, default: () => ({}) } })
+// helper per recuperare meta in modo sicuro
+function getFieldMeta(type) {
+  const key = String(type || '').toLowerCase()
+  return FIELD_CONFIG[key] || FIELD_CONFIG.email
+}
+
+// array per il <select> (usa la config)
+const FIELD_TYPES = Object.entries(FIELD_CONFIG).map(([value, meta]) => ({
+  value,
+  label: meta.label,
+  placeholder: meta.placeholder
+}))
+
+// campo di default
+const defaultField = (type = 'email') => {
+  const meta = getFieldMeta(type)
+  return {
+    type,
+    label: meta.label,
+    value: '',
+    visible: true
+  }
+}
+
+/* --------------------------------
+ * PROPS / EMIT / FORM
+ * -------------------------------- */
+const props = defineProps({
+  modelValue: { type: Object, default: () => ({}) }
+})
 const emit = defineEmits(['update:modelValue', 'submit'])
 
 const form = reactive({
@@ -142,45 +251,65 @@ const form = reactive({
   slug: props.modelValue.slug || '',
   bio:  props.modelValue.bio  || props.modelValue.notes || '',
   theme: props.modelValue.theme || 'minimal',
-  fields: Array.isArray(props.modelValue.fields) ? JSON.parse(JSON.stringify(props.modelValue.fields)) : [],
+  fields: Array.isArray(props.modelValue.fields)
+    ? JSON.parse(JSON.stringify(props.modelValue.fields))
+    : [],
   is_public: props.modelValue.is_public ?? true,
   allow_vcard: props.modelValue.allow_vcard ?? true
 })
 
-
 watch(form, () => emit('update:modelValue', form), { deep: true })
 
+/* --------------------------------
+ * GESTIONE CAMPI
+ * -------------------------------- */
 const quickType = ref('email')
-const addField = (type) => form.fields.push(defaultField(type))
-const removeField = (i) => form.fields.splice(i, 1)
+
+const addField = (type) => {
+  form.fields.push(defaultField(type))
+}
+
+const removeField = (i) => {
+  form.fields.splice(i, 1)
+}
 
 const placeholderFor = (f) => {
-  const meta = FIELD_TYPES.find(t => t.value === (f?.type || '')) || FIELD_TYPES[0]
-  return { label: meta.label, value: meta.placeholder }
+  const meta = getFieldMeta(f?.type)
+  return {
+    label: meta.label,
+    value: meta.placeholder
+  }
 }
 
 const applyTypeDefaults = (f) => {
-  const meta = FIELD_TYPES.find(t => t.value === (f?.type || ''))
+  const meta = getFieldMeta(f?.type)
   if (!meta) return
-  if (!f.label || f.label.trim() === '' || FIELD_TYPES.some(t => t.label === f.label)) {
+
+  // se la label è vuota o è una label "standard", la rimpiazziamo
+  if (
+    !f.label ||
+    f.label.trim() === '' ||
+    FIELD_TYPES.some(t => t.label === f.label)
+  ) {
     f.label = meta.label
   }
 }
 
+// normalizzazione valori (aggiunta https:// per i campi urlLike)
 const normalizeValue = (f) => {
   const v = (f.value || '').trim()
-  const type = (f.type || '').toLowerCase()
-  const urlLike = [
-    'url','linkedin','instagram','x','facebook','whatsapp','telegram',
-    'github','youtube','tiktok','twitch','onlyfans','strava'
-  ]
-  if (v && urlLike.includes(type)) {
+  const meta = getFieldMeta(f?.type)
+
+  if (v && meta.urlLike) {
     f.value = /^https?:\/\//i.test(v) ? v : `https://${v}`
   } else {
     f.value = v
   }
 }
 
+/* --------------------------------
+ * SUBMIT
+ * -------------------------------- */
 const onSubmit = () => {
   const cleaned = {
     title: (form.title || '').trim(),
@@ -199,6 +328,7 @@ const onSubmit = () => {
       }))
       .filter(x => x.type && x.value)
   }
+
   emit('submit', cleaned)
 }
 </script>
