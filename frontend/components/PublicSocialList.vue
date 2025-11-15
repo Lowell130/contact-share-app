@@ -5,22 +5,22 @@
     class="my-6 space-y-3 text-left w-full max-w-xl mx-auto"
   >
     <li v-for="(f, i) in socialFields" :key="i">
- <a
-  :href="hrefFor(f)"
-  :target="isExternal(f) ? '_blank' : null"
-  :rel="isExternal(f) ? 'noopener' : null"
-  :aria-label="`Apri ${socialLabelFor(f)} di ${cardTitle}`"
-  :class="[
-    // base + effetto glass
-    'flex items-center p-3 text-base font-medium rounded-xl group',
-    'border border-white/10',
-    'transition duration-200 ease-out transform',
-    'hover:-translate-y-0.5 hover:shadow-xl',
-    'hover:border-white/40 hover:backdrop-blur-sm',
-    socialClassFor(f)
-  ]"
->
-
+      <a
+        :href="hrefFor(f)"
+        :target="isExternal(f) ? '_blank' : null"
+        :rel="isExternal(f) ? 'noopener' : null"
+        :aria-label="`Apri ${socialLabelFor(f)} di ${cardTitle}`"
+        :class="[
+          // base + effetto glass
+          'flex items-center p-3 text-base font-medium rounded-xl group',
+          'border border-white/10',
+          'transition duration-200 ease-out transform',
+          'hover:-translate-y-0.5 hover:shadow-xl',
+          'hover:border-white/40 hover:backdrop-blur-sm',
+          socialClassFor(f)
+        ]"
+        @click="onClickSocial(f)"
+      >
         <!-- Icona -->
         <span class="shrink-0 h-5 w-5" v-html="iconFor(f)"></span>
 
@@ -45,8 +45,11 @@ import { computed } from 'vue'
 
 const props = defineProps({
   cardTitle: { type: String, default: '' },
-  fields: { type: Array, required: true }
+  cardId:    { type: String, required: true },
+  fields:    { type: Array, required: true }
 })
+
+const config = useRuntimeConfig()
 
 /* -----------------------------
  *  CONFIG SOCIAL + GRADIENT
@@ -131,7 +134,10 @@ const SOCIAL_TYPES = Object.keys(SOCIAL_CONFIG)
  * ----------------------------- */
 const socialFields = computed(() =>
   (props.fields || []).filter(
-    f => SOCIAL_TYPES.includes(String(f.type || '').toLowerCase()) && f.value
+    f =>
+      SOCIAL_TYPES.includes(String(f.type || '').toLowerCase()) &&
+      f.value &&
+      f.visible !== false
   )
 )
 
@@ -163,6 +169,7 @@ function socialClassFor(f) {
   // fallback neutro (senza vetro, ma comunque carino)
   return 'bg-gray-50 text-gray-900 hover:bg-gray-100 dark:bg-gray-600 dark:text-white'
 }
+
 function hrefFor(f) {
   const t = (f?.type || '').toLowerCase()
   const v = String(f?.value || '').trim()
@@ -190,6 +197,31 @@ function iconFor(f) {
   const t = (f?.type || '').toLowerCase()
   const iconFn = SOCIAL_CONFIG[t]?.icon
   return iconFn ? iconFn() : svgInfo()
+}
+
+/* -----------------------------
+ *  LOG CLICK SOCIAL
+ * ----------------------------- */
+
+const onClickSocial = (f) => {
+  const socialType = (f?.type || '').toLowerCase()
+  const target = hrefFor(f)
+
+  // fire & forget, non blocchiamo la navigazione
+  if (!props.cardId || !socialType) return
+
+  $fetch(`${config.public.apiBase}/public/events/social-click`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: {
+      card_id: props.cardId,
+      social_type: socialType,
+      target
+    }
+  }).catch((err) => {
+    // log semplice in console, nessun impatto sulla UX
+    console.warn('Errore logging social-click', err)
+  })
 }
 
 /* -----------------------------

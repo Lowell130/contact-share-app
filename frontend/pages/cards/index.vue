@@ -17,6 +17,12 @@
           <NuxtLink :to="`/cards/${c.id}`" class="px-2 py-1 border rounded hover:bg-gray-100">Modifica</NuxtLink>
           <a :href="`/c/${c.slug}`" target="_blank" class="px-2 py-1 border rounded hover:bg-gray-100">Apri pubblico</a>
           <button @click="confirmDelete(c)" class="px-2 py-1 border border-red-400 text-red-600 rounded hover:bg-red-50">Elimina</button>
+          <NuxtLink
+  :to="`/analytics/${c.id}`" type="button"
+  class="px-2 py-1 border border-red-400 text-red-600 rounded hover:bg-red-50 shadow-md"
+>
+  Statistiche
+</NuxtLink>
         </div>
       </li>
     </ul>

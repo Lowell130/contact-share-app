@@ -1,3 +1,4 @@
+<!-- components/PublicCardFlowbite.vue -->
 <template>
   <section class="bg-white dark:bg-gray-900">
     <div class="flex items-center justify-center min-h-screen py-6">
@@ -74,11 +75,12 @@
           </div>
 
      <!-- SOLO SOCIAL NELLA LISTA -->
+<!-- DOPO -->
 <PublicSocialList
   :card-title="card.title"
+  :card-id="card.id"
   :fields="visibleFields"
 />
-
           <!-- QR -->
           <div class="flex items-center justify-center">
             <img

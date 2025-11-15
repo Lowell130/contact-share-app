@@ -1,3 +1,5 @@
+
+<!-- pages/c/[slug].vue -->
 <template>
   <section class="max-w-2xl mx-auto">
     <div v-if="error" class="p-3 border border-red-300 bg-red-50 text-red-700 rounded">

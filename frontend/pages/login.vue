@@ -14,8 +14,8 @@
 const router = useRouter()
 const { login } = useAuth()
 
-const email = ref('dev@example.com')
-const password = ref('test123')
+const email = ref('')
+const password = ref('')
 const error = ref('')
 
 const onSubmit = async () => {

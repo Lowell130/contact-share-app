@@ -1,3 +1,4 @@
+# routers/auth.py
 from fastapi import APIRouter, HTTPException, Depends, status, Body
 from fastapi.responses import JSONResponse
 from pydantic import EmailStr

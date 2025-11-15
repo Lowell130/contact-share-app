@@ -63,7 +63,23 @@ class MagicRequestIn(BaseModel):
 class MagicConfirmIn(BaseModel):
     token: str
 
+class AnalyticsPoint(BaseModel):
+    date: str   # es. "2025-11-15"
+    count: int
+
+class AnalyticsReferrer(BaseModel):
+    ref: str     # es. "direct", "https://twitter.com/..."
+    count: int
+
+class AnalyticsDevice(BaseModel):
+    kind: str    # es. "mobile", "desktop", "tablet", "other"
+    count: int
+
 class AnalyticsSummary(BaseModel):
     total_views: int
     total_vcard: int
-    last30d: List[dict]
+    views_24h: int
+    views_7d: int
+    last30d: List[AnalyticsPoint]
+    top_referrers: List[AnalyticsReferrer]
+    devices: List[AnalyticsDevice]

@@ -21,13 +21,15 @@ export const useAuth = () => {
     if (!process.client) return
     if (accessToken.value)  localStorage.setItem('access_token', accessToken.value)
     else                    localStorage.removeItem('access_token')
+
     if (refreshToken.value) localStorage.setItem('refresh_token', refreshToken.value)
     else                    localStorage.removeItem('refresh_token')
+
     if (user.value)         localStorage.setItem('user', JSON.stringify(user.value))
     else                    localStorage.removeItem('user')
   }
 
-  const setTokens = (access, refresh='') => {
+  const setTokens = (access, refresh = '') => {
     accessToken.value  = access || ''
     refreshToken.value = refresh || ''
     persist()
@@ -39,20 +41,23 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    accessToken.value = ''
+    accessToken.value  = ''
     refreshToken.value = ''
-    user.value = null
+    user.value         = null
     persist()
   }
 
   const login = async (email, password) => {
     const config = useRuntimeConfig()
+
     const res = await $fetch(`${config.public.apiBase}/auth/login`, {
       method: 'POST',
       body: { email, password },
       headers: { 'Content-Type': 'application/json' }
     })
+
     setTokens(res.access_token, res.refresh_token)
+
     try {
       const me = await $fetch(`${config.public.apiBase}/me`, {
         headers: { Authorization: `Bearer ${accessToken.value}` }
@@ -61,6 +66,35 @@ export const useAuth = () => {
     } catch (_) {
       setUser(null)
     }
+
+    return true
+  }
+
+  // 🆕 REGISTRAZIONE
+  const register = async (email, password, name) => {
+    const config = useRuntimeConfig()
+
+    const res = await $fetch(`${config.public.apiBase}/auth/register`, {
+      method: 'POST',
+      body: { email, password, name },
+      headers: { 'Content-Type': 'application/json' }
+    })
+
+    // il backend ti ritorna già access_token e refresh_token
+    setTokens(res.access_token, res.refresh_token)
+
+    // provo a caricare il profilo corrente
+    try {
+      const me = await $fetch(`${config.public.apiBase}/me`, {
+        headers: { Authorization: `Bearer ${accessToken.value}` }
+      })
+      setUser(me)
+    } catch (_) {
+      // come fallback puoi almeno salvare email+name,
+      // ma se preferisci lasciamo null
+      setUser({ email, name })
+    }
+
     return true
   }
 
@@ -75,8 +109,19 @@ export const useAuth = () => {
   }
 
   return {
-    accessToken, refreshToken, user, isLoggedIn, ready,
-    login, logout, setTokens, setUser,
-    authHeaders, loadFromStorage
+    accessToken,
+    refreshToken,
+    user,
+    isLoggedIn,
+    ready,
+    // metodi auth
+    login,
+    register,   // 👈 AGGIUNTO QUI
+    logout,
+    // vari
+    setTokens,
+    setUser,
+    authHeaders,
+    loadFromStorage
   }
 }
