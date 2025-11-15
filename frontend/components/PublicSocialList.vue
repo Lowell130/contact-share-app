@@ -1,4 +1,5 @@
 <!-- components/PublicSocialList.vue -->
+<!-- components/PublicSocialList.vue -->
 <template>
   <ul
     v-if="socialFields.length"
@@ -10,8 +11,8 @@
         :target="isExternal(f) ? '_blank' : null"
         :rel="isExternal(f) ? 'noopener' : null"
         :aria-label="`Apri ${socialLabelFor(f)} di ${cardTitle}`"
+        @click="onClickSocial(f)" 
         :class="[
-          // base + effetto glass
           'flex items-center p-3 text-base font-medium rounded-xl group',
           'border border-white/10',
           'transition duration-200 ease-out transform',
@@ -19,7 +20,6 @@
           'hover:border-white/40 hover:backdrop-blur-sm',
           socialClassFor(f)
         ]"
-        @click="onClickSocial(f)"
       >
         <!-- Icona -->
         <span class="shrink-0 h-5 w-5" v-html="iconFor(f)"></span>
@@ -40,13 +40,15 @@
   </ul>
 </template>
 
+
 <script setup>
 import { computed } from 'vue'
 
 const props = defineProps({
   cardTitle: { type: String, default: '' },
   cardId:    { type: String, required: true },
-  fields:    { type: Array, required: true }
+  fields:    { type: Array, required: true },
+  cardId:    { type: String, required: true }   // 🔴 nuovo
 })
 
 const config = useRuntimeConfig()
@@ -202,26 +204,35 @@ function iconFor(f) {
 /* -----------------------------
  *  LOG CLICK SOCIAL
  * ----------------------------- */
-
 const onClickSocial = (f) => {
-  const socialType = (f?.type || '').toLowerCase()
-  const target = hrefFor(f)
+  if (!process.client) return
 
-  // fire & forget, non blocchiamo la navigazione
-  if (!props.cardId || !socialType) return
+  const payload = {
+    card_id: props.cardId,
+    social_type: (f?.type || '').toLowerCase(),
+    url: hrefFor(f),
+  }
 
-  $fetch(`${config.public.apiBase}/public/events/social-click`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: {
-      card_id: props.cardId,
-      social_type: socialType,
-      target
-    }
-  }).catch((err) => {
-    // log semplice in console, nessun impatto sulla UX
-    console.warn('Errore logging social-click', err)
-  })
+  // 🔍 DEBUG lato frontend
+  console.log('[PublicSocialList] tracking social click', payload)
+
+  try {
+    fetch(`${config.public.apiBase}/public/events/social-click`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    })
+      .then(res => res.json().catch(() => null))
+      .then(data => {
+        console.log('[PublicSocialList] response social-click', data)
+      })
+      .catch(err => {
+        console.error('[PublicSocialList] errore social-click', err)
+      })
+  } catch (err) {
+    console.error('[PublicSocialList] errore fetch social-click', err)
+  }
 }
 
 /* -----------------------------

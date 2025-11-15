@@ -75,10 +75,9 @@
           </div>
 
      <!-- SOLO SOCIAL NELLA LISTA -->
-<!-- DOPO -->
 <PublicSocialList
   :card-title="card.title"
-  :card-id="card.id"
+  :card-id="card.id"       
   :fields="visibleFields"
 />
           <!-- QR -->

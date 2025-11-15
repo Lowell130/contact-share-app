@@ -67,56 +67,82 @@
         </p>
       </div>
 
-      <!-- Referrer & Device -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Referrer -->
-        <div class="p-4 rounded-xl bg-white border shadow-sm">
-          <h3 class="text-sm font-semibold text-gray-700 mb-2">Top referrer</h3>
-          <ul v-if="data.top_referrers.length" class="divide-y text-sm">
-            <li
-              v-for="r in data.top_referrers"
-              :key="r.ref"
-              class="flex items-center justify-between py-2"
-            >
-              <span class="truncate max-w-[180px]" :title="r.ref">
-                {{
-                  r.ref === 'direct'
-                    ? 'Digitazione diretta / Nessun referrer'
-                    : r.ref
-                }}
-              </span>
-              <span class="font-mono text-xs text-gray-600">
-                {{ r.count }}
-              </span>
-            </li>
-          </ul>
-          <p v-else class="text-sm text-gray-500">
-            Ancora nessun referrer disponibile.
-          </p>
-        </div>
+ <!-- Referrer, Device, Social -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <!-- Referrer -->
+  <div class="p-4 rounded-xl bg-white border shadow-sm">
+    <h3 class="text-sm font-semibold text-gray-700 mb-2">Top referrer</h3>
+    <ul v-if="data.top_referrers.length" class="divide-y text-sm">
+      <li
+        v-for="r in data.top_referrers"
+        :key="r.ref"
+        class="flex items-center justify-between py-2"
+      >
+        <span class="truncate max-w-[180px]" :title="r.ref">
+          {{
+            r.ref === 'direct'
+              ? 'Digitazione diretta / Nessun referrer'
+              : r.ref
+          }}
+        </span>
+        <span class="font-mono text-xs text-gray-600">
+          {{ r.count }}
+        </span>
+      </li>
+    </ul>
+    <p v-else class="text-sm text-gray-500">
+      Ancora nessun referrer disponibile.
+    </p>
+  </div>
 
-        <!-- Device -->
-        <div class="p-4 rounded-xl bg-white border shadow-sm">
-          <h3 class="text-sm font-semibold text-gray-700 mb-2">Device</h3>
-          <ul v-if="data.devices.length" class="divide-y text-sm">
-            <li
-              v-for="d in data.devices"
-              :key="d.kind"
-              class="flex items-center justify-between py-2"
-            >
-              <span class="capitalize">
-                {{ labelDevice(d.kind) }}
-              </span>
-              <span class="font-mono text-xs text-gray-600">
-                {{ d.count }}
-              </span>
-            </li>
-          </ul>
-          <p v-else class="text-sm text-gray-500">
-            Nessun dato device per il periodo considerato.
-          </p>
-        </div>
-      </div>
+  <!-- Device -->
+  <div class="p-4 rounded-xl bg-white border shadow-sm">
+    <h3 class="text-sm font-semibold text-gray-700 mb-2">Device</h3>
+    <ul v-if="data.devices.length" class="divide-y text-sm">
+      <li
+        v-for="d in data.devices"
+        :key="d.kind"
+        class="flex items-center justify-between py-2"
+      >
+        <span class="capitalize">
+          {{ labelDevice(d.kind) }}
+        </span>
+        <span class="font-mono text-xs text-gray-600">
+          {{ d.count }}
+        </span>
+      </li>
+    </ul>
+    <p v-else class="text-sm text-gray-500">
+      Nessun dato device per il periodo considerato.
+    </p>
+  </div>
+
+  <!-- 🔴 Social clicks -->
+  <div class="p-4 rounded-xl bg-white border shadow-sm">
+    <h3 class="text-sm font-semibold text-gray-700 mb-2">
+      Click sui social (ultimi 30 giorni)
+    </h3>
+    <ul
+      v-if="data.social_clicks && data.social_clicks.length"
+      class="divide-y text-sm"
+    >
+      <li
+        v-for="s in data.social_clicks"
+        :key="s.social"
+        class="flex items-center justify-between py-2"
+      >
+        <span>{{ labelSocial(s.social) }}</span>
+        <span class="font-mono text-xs text-gray-600">
+          {{ s.count }}
+        </span>
+      </li>
+    </ul>
+    <p v-else class="text-sm text-gray-500">
+      Nessun click sui social nel periodo considerato.
+    </p>
+  </div>
+</div>
+
     </div>
   </section>
 </template>
@@ -295,4 +321,34 @@ const labelDevice = (kind) => {
   if (kind === 'tablet') return 'Tablet'
   return 'Altro'
 }
+
+const labelSocial = (t) => {
+  const k = (t || '').toLowerCase()
+
+  if (!k || k === 'unknown') {
+    return 'Altro / non rilevato'
+  }
+
+  const map = {
+    facebook: 'Facebook',
+    instagram: 'Instagram',
+    linkedin: 'LinkedIn',
+    x: 'X / Twitter',
+    twitter: 'X / Twitter',
+    github: 'GitHub',
+    youtube: 'YouTube',
+    tiktok: 'TikTok',
+    twitch: 'Twitch',
+    strava: 'Strava',
+    telegram: 'Telegram',
+    whatsapp: 'WhatsApp',
+    onlyfans: 'OnlyFans',
+    dribbble: 'Dribbble',
+  }
+
+  return map[k] || k
+}
+
+
+
 </script>

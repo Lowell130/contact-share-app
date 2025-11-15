@@ -1,6 +1,6 @@
 # app/routers/public.py
 from fastapi import APIRouter, HTTPException, Request, Body
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from ..db import get_db
 from ..utils import now_utc
 from ..services.vcard import to_vcard
@@ -96,3 +96,48 @@ async def public_social_click(
     })
 
     return {"ok": True}
+
+# 🔴 NUOVO ENDPOINT: tracking click social + DEBUG
+@router.post("/events/social-click", response_model=None)
+async def public_social_click(
+    request: Request,
+    payload: dict = Body(...)
+):
+    """
+    Traccia un click su un social di una card pubblica.
+    Body atteso:
+      {
+        "card_id": "....",
+        "social_type": "instagram" | "linkedin" | ...,
+        "url": "https://..."
+      }
+    """
+    db = get_db()
+
+    card_id = str(payload.get("card_id") or "").strip()
+    social_type = str(payload.get("social_type") or "").strip().lower()
+    url = str(payload.get("url") or "").strip() or None
+
+    if not card_id:
+        raise HTTPException(status_code=400, detail="card_id missing")
+
+    # se social_type vuoto -> unknown
+    if not social_type:
+        social_type = "unknown"
+
+    # 🔍 DEBUG: logga lato backend cosa arriva
+    print("[social-click] payload:", payload)
+    print("[social-click] parsed -> card_id:", card_id, "social_type:", social_type, "url:", url)
+
+    await db.events.insert_one({
+        "card_id": card_id,
+        "type": "social_click",
+        "social": social_type,
+        "url": url,
+        "ua": request.headers.get("user-agent"),
+        "ref": request.headers.get("referer"),
+        "ts": now_utc(),
+    })
+
+    # ritorna qualcosa di semplice per poterlo vedere in Network
+    return JSONResponse({"ok": True, "social": social_type})

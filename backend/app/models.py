@@ -75,6 +75,10 @@ class AnalyticsDevice(BaseModel):
     kind: str    # es. "mobile", "desktop", "tablet", "other"
     count: int
 
+class SocialClickStat(BaseModel):
+    social: str
+    count: int
+
 class AnalyticsSummary(BaseModel):
     total_views: int
     total_vcard: int
@@ -83,3 +87,4 @@ class AnalyticsSummary(BaseModel):
     last30d: List[AnalyticsPoint]
     top_referrers: List[AnalyticsReferrer]
     devices: List[AnalyticsDevice]
+    social_clicks: List[SocialClickStat] = []
