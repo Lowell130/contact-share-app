@@ -56,10 +56,9 @@
           </div>
 
           <!-- BIO -->
-          <p
-            v-if="card.notes"
-            class="mt-3 mb-4 font-light text-sm text-gray-500 dark:text-gray-400"
-          >
+        
+<p class="mb-3 text-center text-body text-gray-400">
+
             {{ card.notes }}
           </p>
 

@@ -1,4 +1,3 @@
-<!-- pages/analytics/[id].vue -->
 <template>
   <section class="max-w-5xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-2">Analytics card</h1>
@@ -45,104 +44,123 @@
         </div>
       </div>
 
-      <!-- Chart -->
+      <!-- Chart visite ultimi 30 giorni -->
       <div class="p-4 md:p-6 rounded-2xl bg-white border border-gray-200 shadow-sm">
-        <div class="flex items-center justify-between mb-3 ">
+        <div class="flex items-center justify-between mb-3">
           <h2 class="text-sm font-semibold text-gray-700">
             Visite ultimi 30 giorni
           </h2>
-          <span class="text-xs text-gray-400 ">
+          <span class="text-xs text-gray-400">
             Totale: {{ totalLast30d }}
           </span>
         </div>
 
-        <!-- contenitore ApexCharts -->
-        <div
-          v-if="hasChartData"
-          ref="chartEl"
-          class="w-full h-64"
-        />
+        <div v-if="hasChartData" ref="chartEl" class="w-full h-64" />
         <p v-else class="text-sm text-gray-500">
           Nessuna visita registrata negli ultimi 30 giorni.
         </p>
       </div>
 
- <!-- Referrer, Device, Social -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <!-- Referrer -->
-  <div class="p-4 rounded-xl bg-white border shadow-sm">
-    <h3 class="text-sm font-semibold text-gray-700 mb-2">Top referrer</h3>
-    <ul v-if="data.top_referrers.length" class="divide-y text-sm">
-      <li
-        v-for="r in data.top_referrers"
-        :key="r.ref"
-        class="flex items-center justify-between py-2"
-      >
-        <span class="truncate max-w-[180px]" :title="r.ref">
-          {{
-            r.ref === 'direct'
-              ? 'Digitazione diretta / Nessun referrer'
-              : r.ref
-          }}
-        </span>
-        <span class="font-mono text-xs text-gray-600">
-          {{ r.count }}
-        </span>
-      </li>
-    </ul>
-    <p v-else class="text-sm text-gray-500">
-      Ancora nessun referrer disponibile.
-    </p>
-  </div>
+      <!-- Referrer, Device, Social (liste testuali) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Referrer -->
+        <div class="p-4 rounded-xl bg-white border shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">Top referrer</h3>
+          <ul v-if="data.top_referrers.length" class="divide-y text-sm">
+            <li
+              v-for="r in data.top_referrers"
+              :key="r.ref"
+              class="flex items-center justify-between py-2"
+            >
+              <span class="truncate max-w-[180px]" :title="r.ref">
+                {{
+                  r.ref === 'direct'
+                    ? 'Digitazione diretta / Nessun referrer'
+                    : r.ref
+                }}
+              </span>
+              <span class="font-mono text-xs text-gray-600">
+                {{ r.count }}
+              </span>
+            </li>
+          </ul>
+          <p v-else class="text-sm text-gray-500">
+            Ancora nessun referrer disponibile.
+          </p>
+        </div>
 
-  <!-- Device -->
-  <div class="p-4 rounded-xl bg-white border shadow-sm">
-    <h3 class="text-sm font-semibold text-gray-700 mb-2">Device</h3>
-    <ul v-if="data.devices.length" class="divide-y text-sm">
-      <li
-        v-for="d in data.devices"
-        :key="d.kind"
-        class="flex items-center justify-between py-2"
-      >
-        <span class="capitalize">
-          {{ labelDevice(d.kind) }}
-        </span>
-        <span class="font-mono text-xs text-gray-600">
-          {{ d.count }}
-        </span>
-      </li>
-    </ul>
-    <p v-else class="text-sm text-gray-500">
-      Nessun dato device per il periodo considerato.
-    </p>
-  </div>
+        <!-- Device (lista) -->
+        <div class="p-4 rounded-xl bg-white border shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">Device</h3>
+          <ul v-if="data.devices.length" class="divide-y text-sm">
+            <li
+              v-for="d in data.devices"
+              :key="d.kind"
+              class="flex items-center justify-between py-2"
+            >
+              <span class="capitalize">
+                {{ labelDevice(d.kind) }}
+              </span>
+              <span class="font-mono text-xs text-gray-600">
+                {{ d.count }}
+              </span>
+            </li>
+          </ul>
+          <p v-else class="text-sm text-gray-500">
+            Nessun dato device per il periodo considerato.
+          </p>
+        </div>
 
-  <!-- 🔴 Social clicks -->
-  <div class="p-4 rounded-xl bg-white border shadow-sm">
-    <h3 class="text-sm font-semibold text-gray-700 mb-2">
-      Click sui social (ultimi 30 giorni)
-    </h3>
-    <ul
-      v-if="data.social_clicks && data.social_clicks.length"
-      class="divide-y text-sm"
-    >
-      <li
-        v-for="s in data.social_clicks"
-        :key="s.social"
-        class="flex items-center justify-between py-2"
-      >
-        <span>{{ labelSocial(s.social) }}</span>
-        <span class="font-mono text-xs text-gray-600">
-          {{ s.count }}
-        </span>
-      </li>
-    </ul>
-    <p v-else class="text-sm text-gray-500">
-      Nessun click sui social nel periodo considerato.
-    </p>
-  </div>
-</div>
+        <!-- Social (lista) -->
+        <div class="p-4 rounded-xl bg-white border shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-700 mb-2">
+            Click sui social (ultimi 30 giorni)
+          </h3>
+          <ul
+            v-if="data.social_clicks && data.social_clicks.length"
+            class="divide-y text-sm"
+          >
+            <li
+              v-for="s in data.social_clicks"
+              :key="s.social"
+              class="flex items-center justify-between py-2"
+            >
+              <span>{{ labelSocial(s.social) }}</span>
+              <span class="font-mono text-xs text-gray-600">
+                {{ s.count }}
+              </span>
+            </li>
+          </ul>
+          <p v-else class="text-sm text-gray-500">
+            Nessun click sui social nel periodo considerato.
+          </p>
+        </div>
+      </div>
 
+      <!-- NUOVI CHART: Device + Social click -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Donut Device -->
+        <div class="p-4 md:p-6 rounded-2xl bg-white border border-gray-200 shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">
+            Distribuzione device (ultimi 30 giorni)
+          </h3>
+          <div v-if="hasDeviceData" ref="deviceChartEl" class="w-full h-60" />
+          <p v-else class="text-sm text-gray-500">
+            Nessun dato device sufficiente per il grafico.
+          </p>
+        </div>
+
+        <!-- Bar Social -->
+        <div class="p-4 md:p-6 rounded-2xl bg-white border border-gray-200 shadow-sm">
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">
+            Click per social (ultimi 30 giorni)
+          </h3>
+          <div v-if="hasSocialData" ref="socialChartEl" class="w-full h-60" />
+          <p v-else class="text-sm text-gray-500">
+            Nessun click sui social sufficiente per il grafico.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -163,18 +181,34 @@ const { $api } = useApi()
 const data = ref(null)
 const error = ref('')
 
-const chartEl = ref(null)
+/** Elementi DOM per i 3 grafici */
+const chartEl = ref(null)         // line chart visite
+const deviceChartEl = ref(null)   // donut device
+const socialChartEl = ref(null)   // bar social
+
+/** Istanze ApexCharts */
 const chartInstance = ref(null)
+const deviceChartInstance = ref(null)
+const socialChartInstance = ref(null)
+
+/** Cache di ApexCharts (evita import multipli) */
+let ApexChartsLib = null
+const getApex = async () => {
+  if (!process.client) return null
+  if (ApexChartsLib) return ApexChartsLib
+  const mod = await import('apexcharts')
+  ApexChartsLib = mod.default
+  return ApexChartsLib
+}
 
 /** Carica le analytics dal backend */
 const fetchAnalytics = async () => {
   try {
     error.value = ''
     data.value = await $api(`/analytics/cards/${route.params.id}/summary`)
-    // dopo aver caricato i dati, inizializza/aggiorna il grafico
     if (process.client) {
       await nextTick()
-      await initChart()
+      await initAllCharts()
     }
   } catch (e) {
     console.error(e)
@@ -199,9 +233,21 @@ const totalLast30d = computed(() => {
   )
 })
 
-/** Abbiamo dati per il grafico? */
+/** Flag presenza dati per ciascun grafico */
 const hasChartData = computed(() => {
   return !!(data.value && data.value.last30d && data.value.last30d.length)
+})
+
+const hasDeviceData = computed(() => {
+  return !!(data.value && data.value.devices && data.value.devices.length)
+})
+
+const hasSocialData = computed(() => {
+  return !!(
+    data.value &&
+    data.value.social_clicks &&
+    data.value.social_clicks.length
+  )
 })
 
 /** Colore brand (da CSS var, con fallback) */
@@ -214,7 +260,7 @@ const brandColor = computed(() => {
   return '#0ea5e9' // fallback (tipo sky-500)
 })
 
-/** Opzioni complete ApexCharts (area + gradiente) */
+/** Opzioni area chart visite (ultimi 30 giorni) */
 const chartOptions = computed(() => {
   if (!data.value || !data.value.last30d) return null
 
@@ -278,39 +324,134 @@ const chartOptions = computed(() => {
   }
 })
 
-/** Inizializza / re-renderizza il grafico ApexCharts */
-const initChart = async () => {
-  if (!process.client) return
-  if (!chartEl.value) return
-  if (!hasChartData.value) {
-    // se non ci sono dati, distruggi eventuale chart esistente
-    if (chartInstance.value) {
-      chartInstance.value.destroy()
-      chartInstance.value = null
-    }
-    return
+/** Opzioni donut chart device */
+const deviceChartOptions = computed(() => {
+  if (!hasDeviceData.value) return null
+  const labels = data.value.devices.map((d) => labelDevice(d.kind))
+  const series = data.value.devices.map((d) => d.count)
+  return {
+    chart: {
+      type: 'donut',
+      height: '100%',
+      toolbar: { show: false },
+    },
+    labels,
+    series,
+    colors: ['#0ea5e9', '#22c55e', '#6366f1', '#f97316'],
+    legend: {
+      position: 'bottom',
+      labels: { colors: '#4b5563' },
+    },
+    stroke: {
+      width: 1,
+      colors: ['#ffffff'],
+    },
+    dataLabels: { enabled: false },
   }
+})
 
-  const options = chartOptions.value
-  if (!options) return
+/** Opzioni bar chart social click */
+const socialChartOptions = computed(() => {
+  if (!hasSocialData.value) return null
+  const sorted = [...data.value.social_clicks].sort(
+    (a, b) => b.count - a.count
+  )
+  const categories = sorted.map((s) => labelSocial(s.social))
+  const seriesData = sorted.map((s) => s.count)
 
-  const mod = await import('apexcharts')
-  const ApexCharts = mod.default
+  return {
+    chart: {
+      type: 'bar',
+      height: '100%',
+      toolbar: { show: false },
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        borderRadius: 4,
+      },
+    },
+    series: [
+      {
+        name: 'Click',
+        data: seriesData,
+      },
+    ],
+    xaxis: {
+      categories,
+      labels: {
+        style: { colors: '#6b7280', fontSize: '11px' },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: { colors: '#6b7280', fontSize: '11px' },
+      },
+    },
+    colors: ['#0ea5e9'],
+    dataLabels: { enabled: false },
+    grid: {
+      borderColor: '#e5e7eb',
+      strokeDashArray: 4,
+    },
+  }
+})
 
-  // distruggi l'istanza precedente se presente
+/** Inizializza / aggiorna TUTTI i grafici ApexCharts */
+const initAllCharts = async () => {
+  if (!process.client) return
+  const ApexCharts = await getApex()
+  if (!ApexCharts) return
+
+  // Line / area chart visite
   if (chartInstance.value) {
     chartInstance.value.destroy()
     chartInstance.value = null
   }
+  if (chartEl.value && hasChartData.value && chartOptions.value) {
+    chartInstance.value = new ApexCharts(chartEl.value, chartOptions.value)
+    await chartInstance.value.render()
+  }
 
-  chartInstance.value = new ApexCharts(chartEl.value, options)
-  await chartInstance.value.render()
+  // Donut device
+  if (deviceChartInstance.value) {
+    deviceChartInstance.value.destroy()
+    deviceChartInstance.value = null
+  }
+  if (deviceChartEl.value && hasDeviceData.value && deviceChartOptions.value) {
+    deviceChartInstance.value = new ApexCharts(
+      deviceChartEl.value,
+      deviceChartOptions.value
+    )
+    await deviceChartInstance.value.render()
+  }
+
+  // Bar social
+  if (socialChartInstance.value) {
+    socialChartInstance.value.destroy()
+    socialChartInstance.value = null
+  }
+  if (socialChartEl.value && hasSocialData.value && socialChartOptions.value) {
+    socialChartInstance.value = new ApexCharts(
+      socialChartEl.value,
+      socialChartOptions.value
+    )
+    await socialChartInstance.value.render()
+  }
 }
 
 onBeforeUnmount(() => {
   if (chartInstance.value) {
     chartInstance.value.destroy()
     chartInstance.value = null
+  }
+  if (deviceChartInstance.value) {
+    deviceChartInstance.value.destroy()
+    deviceChartInstance.value = null
+  }
+  if (socialChartInstance.value) {
+    socialChartInstance.value.destroy()
+    socialChartInstance.value = null
   }
 })
 
@@ -322,6 +463,7 @@ const labelDevice = (kind) => {
   return 'Altro'
 }
 
+/** Label carine per i social */
 const labelSocial = (t) => {
   const k = (t || '').toLowerCase()
 
@@ -348,7 +490,4 @@ const labelSocial = (t) => {
 
   return map[k] || k
 }
-
-
-
 </script>
