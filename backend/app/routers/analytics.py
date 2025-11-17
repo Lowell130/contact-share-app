@@ -21,7 +21,8 @@ async def summary(id: str, user=Depends(get_current_user)):
       last30d: [{date: 'YYYY-MM-DD', count: int}],
       top_referrers: [{ref: str, count: int}],
       devices: [{kind: 'desktop'|'mobile'|'tablet'|'unknown', count: int}],
-      social_clicks: [{social: str, count: int}]
+      social_clicks: [{social: str, count: int}],
+      top_countries: [{country: str, count: int}]
     }
     """
     db = get_db()
@@ -99,7 +100,7 @@ async def summary(id: str, user=Depends(get_current_user)):
             "count": row["count"],
         })
 
-    # --- Device breakdown ---
+    # --- Device breakdown (via user-agent, come avevi) ---
     devices = []
     pipeline_dev = [
         {
@@ -153,9 +154,7 @@ async def summary(id: str, user=Depends(get_current_user)):
         },
         {
             "$group": {
-                # 👇 Prova prima il campo "social",
-                # se è null prova "social_type",
-                # se è ancora null -> "unknown"
+                # Prima "social", poi "social_type", poi "unknown"
                 "_id": {
                     "$ifNull": [
                         "$social",
@@ -175,6 +174,32 @@ async def summary(id: str, user=Depends(get_current_user)):
             "count": row["count"],
         })
 
+    # --- 🌍 Geo analytics: top paesi ultimi 30 giorni ---
+    top_countries = []
+    pipeline_geo = [
+        {
+            "$match": {
+                "card_id": id,
+                "ts": {"$gte": since_30d},
+            }
+        },
+        {
+            "$group": {
+                "_id": {
+                    "$ifNull": ["$country", "unknown"]
+                },
+                "count": {"$sum": 1},
+            }
+        },
+        {"$sort": {"count": -1}},
+        {"$limit": 10},
+    ]
+    async for row in db.events.aggregate(pipeline_geo):
+        top_countries.append({
+            "country": row["_id"],
+            "count": row["count"],
+        })
+
     return {
         "total_views": total_views,
         "total_vcard": total_vcard,
@@ -184,4 +209,5 @@ async def summary(id: str, user=Depends(get_current_user)):
         "top_referrers": top_referrers,
         "devices": devices,
         "social_clicks": social_clicks,
+        "top_countries": top_countries,   # 👈 usato dal frontend per il grafico geo
     }

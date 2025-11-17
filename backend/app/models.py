@@ -79,6 +79,10 @@ class SocialClickStat(BaseModel):
     social: str
     count: int
 
+class CountryBucket(BaseModel):
+    country: str
+    count: int
+
 class AnalyticsSummary(BaseModel):
     total_views: int
     total_vcard: int
@@ -88,3 +92,4 @@ class AnalyticsSummary(BaseModel):
     top_referrers: List[AnalyticsReferrer]
     devices: List[AnalyticsDevice]
     social_clicks: List[SocialClickStat] = []
+    top_countries: List[CountryBucket] = []

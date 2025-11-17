@@ -1,3 +1,4 @@
+<!-- pages/analytics/[id].vue -->
 <template>
   <section class="max-w-5xl mx-auto py-8">
     <h1 class="text-2xl font-bold mb-2">Analytics card</h1>
@@ -137,7 +138,7 @@
         </div>
       </div>
 
-      <!-- NUOVI CHART: Device + Social click -->
+      <!-- Device / Social charts -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Donut Device -->
         <div class="p-4 md:p-6 rounded-2xl bg-white border border-gray-200 shadow-sm">
@@ -161,6 +162,25 @@
           </p>
         </div>
       </div>
+
+      <!-- 🌍 Geo analytics -->
+      <div class="p-4 md:p-6 rounded-2xl bg-white border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-gray-700">
+            Provenienza visite (ultimi 30 giorni)
+          </h3>
+          <span
+            v-if="data.top_countries && data.top_countries.length"
+            class="text-xs text-gray-400"
+          >
+            Paesi: {{ data.top_countries.length }}
+          </span>
+        </div>
+        <div v-if="hasGeoData" ref="geoChartEl" class="w-full h-72" />
+        <p v-else class="text-sm text-gray-500">
+          Nessun dato geografico disponibile per il periodo considerato.
+        </p>
+      </div>
     </div>
   </section>
 </template>
@@ -181,17 +201,19 @@ const { $api } = useApi()
 const data = ref(null)
 const error = ref('')
 
-/** Elementi DOM per i 3 grafici */
+/** Elementi DOM per i grafici */
 const chartEl = ref(null)         // line chart visite
 const deviceChartEl = ref(null)   // donut device
 const socialChartEl = ref(null)   // bar social
+const geoChartEl = ref(null)      // bar paesi
 
 /** Istanze ApexCharts */
 const chartInstance = ref(null)
 const deviceChartInstance = ref(null)
 const socialChartInstance = ref(null)
+const geoChartInstance = ref(null)
 
-/** Cache di ApexCharts (evita import multipli) */
+/** Cache di ApexCharts */
 let ApexChartsLib = null
 const getApex = async () => {
   if (!process.client) return null
@@ -233,7 +255,7 @@ const totalLast30d = computed(() => {
   )
 })
 
-/** Flag presenza dati per ciascun grafico */
+/** Flag presenza dati */
 const hasChartData = computed(() => {
   return !!(data.value && data.value.last30d && data.value.last30d.length)
 })
@@ -250,6 +272,14 @@ const hasSocialData = computed(() => {
   )
 })
 
+const hasGeoData = computed(() => {
+  return !!(
+    data.value &&
+    data.value.top_countries &&
+    data.value.top_countries.length
+  )
+})
+
 /** Colore brand (da CSS var, con fallback) */
 const brandColor = computed(() => {
   if (process.client) {
@@ -257,10 +287,10 @@ const brandColor = computed(() => {
     const v = cs.getPropertyValue('--color-fg-brand').trim()
     if (v) return v
   }
-  return '#0ea5e9' // fallback (tipo sky-500)
+  return '#0ea5e9' // fallback (sky-500)
 })
 
-/** Opzioni area chart visite (ultimi 30 giorni) */
+/** Opzioni area chart visite */
 const chartOptions = computed(() => {
   if (!data.value || !data.value.last30d) return null
 
@@ -324,7 +354,7 @@ const chartOptions = computed(() => {
   }
 })
 
-/** Opzioni donut chart device */
+/** Donut device */
 const deviceChartOptions = computed(() => {
   if (!hasDeviceData.value) return null
   const labels = data.value.devices.map((d) => labelDevice(d.kind))
@@ -350,7 +380,7 @@ const deviceChartOptions = computed(() => {
   }
 })
 
-/** Opzioni bar chart social click */
+/** Bar social */
 const socialChartOptions = computed(() => {
   if (!hasSocialData.value) return null
   const sorted = [...data.value.social_clicks].sort(
@@ -397,13 +427,65 @@ const socialChartOptions = computed(() => {
   }
 })
 
-/** Inizializza / aggiorna TUTTI i grafici ApexCharts */
+/** Bar paesi (geo) */
+const geoChartOptions = computed(() => {
+  if (!hasGeoData.value) return null
+  const sorted = [...data.value.top_countries].sort(
+    (a, b) => b.count - a.count
+  )
+  const categories = sorted.map((c) => c.country || 'unknown')
+  const seriesData = sorted.map((c) => c.count)
+
+  return {
+    chart: {
+      type: 'bar',
+      height: '100%',
+      toolbar: { show: false },
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+        columnWidth: '55%',
+        borderRadius: 4,
+      },
+    },
+    series: [
+      {
+        name: 'Visite',
+        data: seriesData,
+      },
+    ],
+    xaxis: {
+      categories,
+      labels: {
+        style: { colors: '#6b7280', fontSize: '11px' },
+      },
+    },
+    yaxis: {
+      labels: {
+        style: { colors: '#6b7280', fontSize: '11px' },
+      },
+      min: 0,
+    },
+    colors: ['#0ea5e9'],
+    dataLabels: { enabled: false },
+    grid: {
+      borderColor: '#e5e7eb',
+      strokeDashArray: 4,
+    },
+    tooltip: {
+      x: { show: true },
+    },
+  }
+})
+
+/** Inizializza / aggiorna tutti i grafici */
 const initAllCharts = async () => {
   if (!process.client) return
   const ApexCharts = await getApex()
   if (!ApexCharts) return
 
-  // Line / area chart visite
+  // line/area visite
   if (chartInstance.value) {
     chartInstance.value.destroy()
     chartInstance.value = null
@@ -413,7 +495,7 @@ const initAllCharts = async () => {
     await chartInstance.value.render()
   }
 
-  // Donut device
+  // donut device
   if (deviceChartInstance.value) {
     deviceChartInstance.value.destroy()
     deviceChartInstance.value = null
@@ -426,7 +508,7 @@ const initAllCharts = async () => {
     await deviceChartInstance.value.render()
   }
 
-  // Bar social
+  // bar social
   if (socialChartInstance.value) {
     socialChartInstance.value.destroy()
     socialChartInstance.value = null
@@ -437,6 +519,19 @@ const initAllCharts = async () => {
       socialChartOptions.value
     )
     await socialChartInstance.value.render()
+  }
+
+  // bar geo (paesi)
+  if (geoChartInstance.value) {
+    geoChartInstance.value.destroy()
+    geoChartInstance.value = null
+  }
+  if (geoChartEl.value && hasGeoData.value && geoChartOptions.value) {
+    geoChartInstance.value = new ApexCharts(
+      geoChartEl.value,
+      geoChartOptions.value
+    )
+    await geoChartInstance.value.render()
   }
 }
 
@@ -453,9 +548,13 @@ onBeforeUnmount(() => {
     socialChartInstance.value.destroy()
     socialChartInstance.value = null
   }
+  if (geoChartInstance.value) {
+    geoChartInstance.value.destroy()
+    geoChartInstance.value = null
+  }
 })
 
-/** Label carine per i device */
+/** Label per device */
 const labelDevice = (kind) => {
   if (kind === 'mobile') return 'Mobile'
   if (kind === 'desktop') return 'Desktop'

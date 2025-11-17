@@ -8,6 +8,16 @@ from ..services.vcard import to_vcard
 # ✅ Prefisso /public per separare chiaramente le route pubbliche da /cards/{id}
 router = APIRouter(prefix="/public", tags=["public"])
 
+def detect_country(request: Request) -> str:
+    """
+    Prova a capire il paese dai classici header di edge/proxy.
+    Se non c'è niente, ritorna 'unknown'.
+    """
+    for h in ("cf-ipcountry", "x-vercel-ip-country", "x-country", "x-geo-country"):
+        v = request.headers.get(h)
+        if v:
+            return v.strip()
+    return "unknown"
 
 @router.get("/cards/{slug}")
 async def public_card(slug: str, request: Request):
@@ -22,6 +32,7 @@ async def public_card(slug: str, request: Request):
         "type": "view",
         "ua": request.headers.get("user-agent"),
         "ref": request.headers.get("referer"),
+        "country": detect_country(request),
         "ts": now_utc(),
     })
 
@@ -53,6 +64,7 @@ async def public_vcard(slug: str, request: Request):
         "type": "vcard_download",
         "ua": request.headers.get("user-agent"),
         "ref": request.headers.get("referer"),
+        "country": detect_country(request),   # 👈 aggiunto
         "ts": now_utc(),
     })
 
@@ -92,6 +104,7 @@ async def public_social_click(
         "target": target,
         "ua": request.headers.get("user-agent"),
         "ref": request.headers.get("referer"),
+        "country": detect_country(request),   # 👈 aggiunto
         "ts": now_utc(),
     })
 
