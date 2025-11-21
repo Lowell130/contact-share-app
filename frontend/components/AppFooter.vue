@@ -1,6 +1,6 @@
 <!-- components/AppFooter.vue -->
 <template>
-  <footer class="border-t p-4 text-sm text-gray-600">
+  <footer class="p-4 text-sm text-gray-600">
     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
       <p>© {{ year }} Contact Share</p>
       <nav class="flex gap-4">

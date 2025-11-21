@@ -1,19 +1,20 @@
+<!-- frontend/components/CardForm.vue  -->
 <template>
   <form @submit.prevent="onSubmit" class="space-y-6 max-w-3xl">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium mb-1">Titolo/Nome</label>
-        <input v-model="form.title" class="border p-2 w-full rounded" required />
+        <label class="block mb-2.5 text-sm font-medium text-heading">Titolo/Nome</label>
+        <input v-model="form.title" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required />
       </div>
       <div>
-        <label class="block text-sm font-medium mb-1">Slug (opz.)</label>
-        <input v-model="form.slug" class="border p-2 w-full rounded" placeholder="es. stefano" />
+        <label class="block mb-2.5 text-sm font-medium text-heading">Slug (opz.)</label>
+        <input v-model="form.slug" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" placeholder="es. stefano" />
       </div>
       <div class="md:col-span-2">
-        <label class="block text-sm font-medium mb-1">Bio (breve)</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Bio (breve)</label>
         <textarea
           v-model="form.bio"
-          class="border p-2 w-full rounded"
+         class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-3.5 shadow-xs placeholder:text-body"
           rows="3"
           placeholder="Breve presentazione/claim sotto al titolo…"
         />
@@ -23,15 +24,15 @@
 
     <div class="space-y-3">
       <div class="flex items-center justify-between">
-        <label class="text-sm font-medium">Campi</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Campi</label>
         <div class="flex gap-2">
-          <select v-model="quickType" class="border p-2 rounded">
+          <select v-model="quickType" class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
             <option disabled value="">Aggiungi rapido…</option>
             <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
               {{ opt.label }}
             </option>
           </select>
-          <button type="button" @click="addField(quickType || 'email')" class="px-3 py-2 border rounded">
+          <button type="button" @click="addField(quickType || 'email')" class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">
             + Aggiungi
           </button>
         </div>
@@ -42,36 +43,52 @@
       <div
         v-for="(f, i) in form.fields"
         :key="i"
-        class="grid grid-cols-12 gap-2 items-center border rounded p-3"
+        class="grid grid-cols-12 gap-2 items-center shadow-sm rounded border border-gray-200 p-4"
       >
         <div class="col-span-12 md:col-span-3">
-          <label class="block text-xs font-medium mb-1">Tipo</label>
-          <select v-model="f.type" @change="applyTypeDefaults(f)" class="border p-2 w-full rounded">
+          <label class="block mb-2.5 text-sm font-medium text-heading">Tipo</label>
+          <select v-model="f.type" @change="applyTypeDefaults(f)" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
             <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
               {{ opt.label }}
             </option>
           </select>
         </div>
         <div class="col-span-12 md:col-span-3">
-          <label class="block text-xs font-medium mb-1">Label</label>
-          <input v-model="f.label" class="border p-2 w-full rounded" :placeholder="placeholderFor(f).label" />
+          <label class="block mb-2.5 text-sm font-medium text-heading">Label</label>
+          <input v-model="f.label" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" :placeholder="placeholderFor(f).label" />
         </div>
         <div class="col-span-12 md:col-span-5">
-          <label class="block text-xs font-medium mb-1">Valore</label>
+          <label class="block mb-2.5 text-sm font-medium text-heading">Valore</label>
           <input
             v-model="f.value"
             @blur="normalizeValue(f)"
-            class="border p-2 w-full rounded"
+            class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
             :placeholder="placeholderFor(f).value"
           />
         </div>
-        <div class="col-span-12 md:col-span-1 flex md:block items-center justify-between gap-3">
-          <label class="inline-flex items-center gap-2 text-xs">
-            <input type="checkbox" v-model="f.visible" />
-            visibile
-          </label>
-          <button type="button" @click="removeField(i)" class="text-red-600 text-xs">rimuovi</button>
-        </div>
+      <div class="col-span-12 md:col-span-1 flex md:block items-center justify-between gap-3">
+
+  <!-- Checkbox stile Flowbite -->
+  <label class="flex items-center select-none text-xs font-medium text-heading">
+    <input
+      type="checkbox"
+      v-model="f.visible"
+      class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium
+             focus:ring-2 focus:ring-brand-soft cursor-pointer"
+    />
+    <span class="ms-2">Visibile</span>
+  </label>
+
+  <!-- Bottone rimuovi -->
+  <button
+    type="button"
+    @click="removeField(i)"
+    class="text-red-600 text-xs"
+  >
+    rimuovi
+  </button>
+</div>
+
       </div>
     </div>
 
@@ -89,8 +106,8 @@
     <!-- aggiungi subito sopra il bottone Salva -->
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
   <div>
-    <label class="block text-sm font-medium mb-1">Tema grafico</label>
-    <select v-model="form.theme" class="border p-2 w-full rounded">
+    <label class="block mb-2.5 text-sm font-medium text-heading">Tema grafico</label>
+    <select v-model="form.theme" class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
       <option disabled value="">Scegli un tema...</option>
       <option value="minimal">Minimal</option>
       <option value="gradient">Colorful Gradient</option>

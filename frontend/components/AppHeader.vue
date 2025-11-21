@@ -1,5 +1,5 @@
 <template>
-  <header class="border-b p-4 flex justify-between items-center">
+  <header class="p-4 flex justify-between items-center">
     <NuxtLink to="/" class="font-semibold text-lg hover:text-blue-600">
       Contact Share
     </NuxtLink>
