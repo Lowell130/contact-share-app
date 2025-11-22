@@ -1,44 +1,64 @@
 <!-- frontend/components/CardForm.vue  -->
 <template>
-  <form @submit.prevent="onSubmit" class="space-y-6 max-w-3xl">
+  <form @submit.prevent="onSubmit" class="space-y-6 max-w-6xl mx-auto">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block mb-2.5 text-sm font-medium text-heading">Titolo/Nome</label>
-        <input v-model="form.title" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" required />
+        <input
+          v-model="form.title"
+          class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+          required
+        />
       </div>
       <div>
         <label class="block mb-2.5 text-sm font-medium text-heading">Slug (opz.)</label>
-        <input v-model="form.slug" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" placeholder="es. stefano" />
+        <input
+          v-model="form.slug"
+          class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+          placeholder="es. stefano"
+        />
       </div>
       <div class="md:col-span-2">
         <label class="block mb-2.5 text-sm font-medium text-heading">Bio (breve)</label>
         <textarea
           v-model="form.bio"
-         class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-3.5 shadow-xs placeholder:text-body"
+          class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-3.5 shadow-xs placeholder:text-body"
           rows="3"
           placeholder="Breve presentazione/claim sotto al titolo…"
         />
       </div>
-      
     </div>
 
     <div class="space-y-3">
       <div class="flex items-center justify-between">
         <label class="block mb-2.5 text-sm font-medium text-heading">Campi</label>
         <div class="flex gap-2">
-          <select v-model="quickType" class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
+          <select
+            v-model="quickType"
+            class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+          >
             <option disabled value="">Aggiungi rapido…</option>
-            <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
+            <option
+              v-for="opt in FIELD_TYPES"
+              :key="opt.value"
+              :value="opt.value"
+            >
               {{ opt.label }}
             </option>
           </select>
-          <button type="button" @click="addField(quickType || 'email')" class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">
+          <button
+            type="button"
+            @click="addField(quickType || 'email')"
+            class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"
+          >
             + Aggiungi
           </button>
         </div>
       </div>
 
-      <div v-if="!form.fields.length" class="text-sm text-gray-500">Nessun campo. Usa “Aggiungi”.</div>
+      <div v-if="!form.fields.length" class="text-sm text-gray-500">
+        Nessun campo. Usa “Aggiungi”.
+      </div>
 
       <div
         v-for="(f, i) in form.fields"
@@ -47,16 +67,30 @@
       >
         <div class="col-span-12 md:col-span-3">
           <label class="block mb-2.5 text-sm font-medium text-heading">Tipo</label>
-          <select v-model="f.type" @change="applyTypeDefaults(f)" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body">
-            <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
+          <select
+            v-model="f.type"
+            @change="applyTypeDefaults(f)"
+            class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+          >
+            <option
+              v-for="opt in FIELD_TYPES"
+              :key="opt.value"
+              :value="opt.value"
+            >
               {{ opt.label }}
             </option>
           </select>
         </div>
+
         <div class="col-span-12 md:col-span-3">
           <label class="block mb-2.5 text-sm font-medium text-heading">Label</label>
-          <input v-model="f.label" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body" :placeholder="placeholderFor(f).label" />
+          <input
+            v-model="f.label"
+            class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
+            :placeholder="placeholderFor(f).label"
+          />
         </div>
+
         <div class="col-span-12 md:col-span-5">
           <label class="block mb-2.5 text-sm font-medium text-heading">Valore</label>
           <input
@@ -66,59 +100,95 @@
             :placeholder="placeholderFor(f).value"
           />
         </div>
-      <div class="col-span-12 md:col-span-1 flex md:block items-center justify-between gap-3">
 
-  <!-- Checkbox stile Flowbite -->
-  <label class="flex items-center select-none text-xs font-medium text-heading">
-    <input
-      type="checkbox"
-      v-model="f.visible"
-      class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium
-             focus:ring-2 focus:ring-brand-soft cursor-pointer"
-    />
-    <span class="ms-2">Visibile</span>
-  </label>
+        <div
+          class="col-span-12 md:col-span-1
+                 flex items-center justify-between gap-3
+                 md:flex-col md:items-end md:justify-center"
+        >
+          <!-- Checkbox stile Flowbite -->
+          <label class="flex items-center select-none text-xs font-medium text-heading">
+            <input
+              type="checkbox"
+              v-model="f.visible"
+              class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium
+                     focus:ring-2 focus:ring-brand-soft cursor-pointer"
+            />
+            <span class="ms-2">Visibile</span>
+          </label>
 
-  <!-- Bottone rimuovi -->
-  <button
-    type="button"
-    @click="removeField(i)"
-    class="text-red-600 text-xs"
-  >
-    rimuovi
-  </button>
-</div>
-
+          <!-- Bottone rimuovi -->
+          <button
+            type="button"
+            @click="removeField(i)"
+            class="flex items-center justify-center
+                   w-7 h-7
+                   bg-red-500 hover:bg-red-600
+                   text-white rounded-full
+                   border border-transparent
+                   shadow-xs
+                   focus:ring-4 focus:ring-red-300
+                   focus:outline-none"
+            title="Rimuovi"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-3 h-3"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="3"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 6l12 12M18 6L6 18"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="flex flex-wrap gap-4">
-      <label class="inline-flex items-center gap-2">
-        <input type="checkbox" v-model="form.is_public" />
-        Pubblica
+    <div class="flex flex-wrap gap-6">
+      <label class="flex items-center select-none text-sm font-medium text-heading gap-2">
+        <input
+          type="checkbox"
+          v-model="form.is_public"
+          class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft cursor-pointer"
+        />
+        <span>Pubblica</span>
       </label>
-      <label class="inline-flex items-center gap-2">
-        <input type="checkbox" v-model="form.allow_vcard" />
-        Consenti vCard
+
+      <label class="flex items-center select-none text-sm font-medium text-heading gap-2">
+        <input
+          type="checkbox"
+          v-model="form.allow_vcard"
+          class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft cursor-pointer"
+        />
+        <span>Consenti vCard</span>
       </label>
     </div>
 
-    <!-- aggiungi subito sopra il bottone Salva -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div>
-    <label class="block mb-2.5 text-sm font-medium text-heading">Tema grafico</label>
-    <select v-model="form.theme" class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
-      <option disabled value="">Scegli un tema...</option>
-      <option value="minimal">Minimal</option>
-      <option value="gradient">Colorful Gradient</option>
-      <option value="dark">Dark Tech</option>
-      <option value="flowbite">Flowbite Card</option> <!-- NEW -->
-    </select>
-  </div>
-</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Tema grafico</label>
+        <select
+          v-model="form.theme"
+          class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+        >
+          <option disabled value="">Scegli un tema...</option>
+          <option value="minimal">Minimal</option>
+          <option value="gradient">Colorful Gradient</option>
+          <option value="dark">Dark Tech</option>
+          <option value="flowbite">Flowbite Card</option>
+        </select>
+      </div>
+    </div>
 
-
-    <button class="px-4 py-2 bg-black text-white rounded">Salva</button>
+    <button class="px-4 py-2 bg-black text-white rounded">
+      Salva
+    </button>
   </form>
 </template>
 
@@ -232,7 +302,7 @@ const FIELD_CONFIG = {
 }
 
 // helper per recuperare meta in modo sicuro
-function getFieldMeta(type) {
+function getFieldMeta (type) {
   const key = String(type || '').toLowerCase()
   return FIELD_CONFIG[key] || FIELD_CONFIG.email
 }
@@ -266,7 +336,7 @@ const emit = defineEmits(['update:modelValue', 'submit'])
 const form = reactive({
   title: props.modelValue.title || '',
   slug: props.modelValue.slug || '',
-  bio:  props.modelValue.bio  || props.modelValue.notes || '',
+  bio: props.modelValue.bio || props.modelValue.notes || '',
   theme: props.modelValue.theme || 'minimal',
   fields: Array.isArray(props.modelValue.fields)
     ? JSON.parse(JSON.stringify(props.modelValue.fields))
@@ -280,10 +350,27 @@ watch(form, () => emit('update:modelValue', form), { deep: true })
 /* --------------------------------
  * GESTIONE CAMPI
  * -------------------------------- */
-const quickType = ref('email')
+const quickType = ref('')
 
 const addField = (type) => {
-  form.fields.push(defaultField(type))
+  const t = String(type || '').toLowerCase()
+  if (!t) return
+
+  // evita duplicati dallo "Aggiungi rapido"
+  const alreadyExists = form.fields.some(
+    f => String(f.type || '').toLowerCase() === t
+  )
+  if (alreadyExists) {
+    if (process.client && typeof window !== 'undefined') {
+      // puoi sostituire alert con un toast / notification custom se vuoi
+      window.alert(`Il campo "${getFieldMeta(t).label}" è già presente.`)
+    }
+    return
+  }
+
+  form.fields.push(defaultField(t))
+  // reset selettore dopo l'aggiunta
+  quickType.value = ''
 }
 
 const removeField = (i) => {
@@ -302,7 +389,6 @@ const applyTypeDefaults = (f) => {
   const meta = getFieldMeta(f?.type)
   if (!meta) return
 
-  // se la label è vuota o è una label "standard", la rimpiazziamo
   if (
     !f.label ||
     f.label.trim() === '' ||

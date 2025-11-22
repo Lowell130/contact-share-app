@@ -1,6 +1,13 @@
 <template>
-  <section v-if="card">
-    <h1 class="text-2xl font-bold mb-4">Modifica Card</h1>
+  
+      <section v-if="card" class="flex justify-center pt-6">
+    <div class="w-full max-w-4xl">
+
+
+
+
+
+    <h1 class="text-2xl font-bold mb-4 text-center">Modifica Card</h1>
     <CardForm v-model="form" @submit="save" />
 
     <div class="mt-6 flex flex-wrap gap-3">
@@ -13,6 +20,7 @@
     </div>
 
     <p v-if="error" class="mt-4 text-red-600 text-sm">{{ error }}</p>
+    </div>
   </section>
 </template>
 

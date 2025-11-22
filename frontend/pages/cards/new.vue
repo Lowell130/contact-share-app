@@ -1,10 +1,13 @@
-<!--// pages/cards/new.vue -->
+<!-- pages/cards/new.vue -->
 <template>
-  <section>
-    <h1 class="text-2xl font-bold mb-4">Nuova Card</h1>
-    <CardForm v-model="form" @submit="save" />
+  <section class="flex justify-center pt-6">
+    <div class="w-full max-w-4xl">
+      <h1 class="text-2xl font-bold mb-4 text-center">Nuova Card</h1>
+      <CardForm v-model="form" @submit="save" />
+    </div>
   </section>
 </template>
+
 
 <script setup>
 import CardForm from '~/components/CardForm.vue'
