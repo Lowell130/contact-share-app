@@ -1,7 +1,7 @@
 <template>
   <header class="p-4 flex justify-between items-center">
     <NuxtLink to="/" class="font-semibold text-lg hover:text-blue-600">
-      Contact Share
+      ContactShare
     </NuxtLink>
 
     <nav class="flex gap-3 items-center">
