@@ -11,7 +11,7 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'CardShare – Nuxt 3',
+      title: 'ContactShare - Share your profiles with friends',
       meta: [{ name: 'viewport', content: 'width=device-width, initial-scale=1' }]
     }
   },
