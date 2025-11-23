@@ -5,8 +5,10 @@
     </NuxtLink>
 
     <nav class="flex gap-3 items-center">
-      <NuxtLink to="/dashboard" class="hover:underline">Dashboard</NuxtLink>
-      <NuxtLink to="/cards" class="hover:underline">Cards</NuxtLink>
+      <template v-if="isLoggedIn">
+        <NuxtLink to="/dashboard" class="hover:underline">Dashboard</NuxtLink>
+        <NuxtLink to="/cards" class="hover:underline">Cards</NuxtLink>
+      </template>
 
       <template v-if="isLoggedIn">
         <button
