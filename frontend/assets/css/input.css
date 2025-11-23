@@ -22,3 +22,50 @@
     --font-body: 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     --font-mono: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace';
 }
+
+@layer utilities {
+  .bg-neutral-primary-soft {
+    @apply bg-white dark:bg-gray-800;
+  }
+  .bg-neutral-primary-medium {
+    @apply bg-gray-50 dark:bg-gray-700;
+  }
+  .bg-neutral-secondary-medium {
+    @apply bg-gray-100 dark:bg-gray-600;
+  }
+  .bg-neutral-tertiary-medium {
+    @apply bg-gray-200 dark:bg-gray-500;
+  }
+  
+  .border-default {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+  .border-default-medium {
+    @apply border-gray-300 dark:border-gray-600;
+  }
+  .border-light {
+    @apply border-gray-100 dark:border-gray-700;
+  }
+
+  .text-heading {
+    @apply text-gray-900 dark:text-white;
+  }
+  .text-body {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+  
+  .rounded-base {
+    @apply rounded-xl;
+  }
+  
+  .text-fg-success {
+    @apply text-green-600 dark:text-green-400;
+  }
+  .bg-success-soft {
+    @apply bg-green-100 dark:bg-green-900/30;
+  }
+  
+  .text-fg-brand {
+    @apply text-blue-600 dark:text-blue-400;
+  }
+}
