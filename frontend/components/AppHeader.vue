@@ -13,7 +13,7 @@
       <template v-if="isLoggedIn">
         <button
           @click="onLogout"
-          class="px-3 py-1 border rounded text-sm hover:bg-gray-100"
+         class="text-white bg-dark box-border border border-transparent hover:bg-dark-strong focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-xs px-4 py-1.5 focus:outline-none"
         >
           Logout
         </button>
