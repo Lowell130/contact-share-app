@@ -20,8 +20,13 @@
       </template>
       <template v-else>
         <NuxtLink
+          to="/register"
+class="text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"        >
+          Crea la tua card
+        </NuxtLink>
+        <NuxtLink
           to="/login"
-          class="px-3 py-1 border rounded text-sm hover:bg-gray-100"
+          class="text-body bg-neutral-primary-soft border border-default hover:bg-neutral-secondary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary-soft shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"
         >
           Entra
         </NuxtLink>
