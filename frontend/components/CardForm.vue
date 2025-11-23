@@ -15,7 +15,7 @@
         <input
           v-model="form.slug"
           class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-          placeholder="es. stefano"
+          placeholder="es. John Doe"
         />
       </div>
       <div class="md:col-span-2">
@@ -30,17 +30,22 @@
     </div>
 
     <div class="space-y-3">
-      <div class="flex items-center justify-between">
-        <label class="block mb-2.5 text-sm font-medium text-heading">Campi</label>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <label class="block text-sm font-medium text-heading">Campi</label>
 
         <!-- 🔹 Select, +Aggiungi e Salva affiancati -->
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-start">
           <select
             v-model="quickType"
-            class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+            class="block pe-8 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body w-full md:w-auto"
           >
-            <option disabled value="">Aggiungi rapido…</option>
-            <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
+            <option disabled value="">Aggiungi campo</option>
+            <option
+              v-for="opt in FIELD_TYPES"
+              :key="opt.value"
+              :value="opt.value"
+              :disabled="form.fields.some(f => f.type === opt.value)"
+            >
               {{ opt.label }}
             </option>
           </select>
@@ -48,17 +53,32 @@
           <button
             type="button"
             @click="addField(quickType || 'email')"
-class="text-white bg-warning box-border border border-transparent hover:bg-warning-strong focus:ring-4 focus:ring-warning-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"          >
-            + Aggiungi
+            class="text-white bg-warning box-border border border-transparent hover:bg-warning-strong focus:ring-4 focus:ring-warning-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>Aggiungi</span>
           </button>
 
-          <button type="button" class="text-white bg-danger box-border border border-transparent hover:bg-danger-strong focus:ring-4 focus:ring-danger-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">Reset</button>
+          <button
+            type="button"
+            class="text-white bg-danger box-border border border-transparent hover:bg-danger-strong focus:ring-4 focus:ring-danger-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Reset</span>
+          </button>
           <!-- 🟢 Bottone Salva spostato qui -->
           <button
             type="submit"
-            class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"
+            class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none flex items-center gap-2"
           >
-            Salva
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Salva</span>
           </button>
         </div>
       </div>
@@ -344,7 +364,10 @@ watch(form, () => emit('update:modelValue', form), { deep: true })
 const quickType = ref('email')
 
 const addField = (type) => {
+  if (!type) return
+  if (form.fields.some(f => f.type === type)) return
   form.fields.unshift(defaultField(type))
+  quickType.value = ''
 }
 
 const removeField = (i) => {
@@ -387,7 +410,28 @@ const normalizeValue = (f) => {
   }
 }
 
+const { $toast } = useNuxtApp() // or useToast if auto-imported, checking imports
+// Actually, looking at previous grep, useToast is likely a composable.
+// Let's check imports in the file.
+// The file uses <script setup>, so auto-imports might be available.
+// The plan said "Import useToast".
+// Let's check if useToast is auto-imported or needs explicit import.
+// Usually in Nuxt 3 it's auto-imported.
+// I will assume auto-import for now, but if not I'll add it.
+// Wait, I should check if I need to add `const toast = useToast()`
+// The grep showed `composables/useToast.js`.
+// So `const toast = useToast()` should work.
+
+const toast = useToast()
+
 const onSubmit = () => {
+  // Validation: check for empty fields
+  const hasEmptyFields = form.fields.some(f => !f.value || !f.value.trim())
+  if (hasEmptyFields) {
+    toast.error('Compila tutti i campi aggiunti o rimuovili.')
+    return
+  }
+
   const cleaned = {
     title: (form.title || '').trim(),
     slug: (form.slug || '').trim(),
