@@ -5,19 +5,57 @@ from ..db import get_db
 from ..utils import now_utc
 from ..services.vcard import to_vcard
 
-# ✅ Prefisso /public per separare chiaramente le route pubbliche da /cards/{id}
+import httpx  # 👈 nuovo import
+
 router = APIRouter(prefix="/public", tags=["public"])
 
-def detect_country(request: Request) -> str:
+
+async def detect_country(request: Request) -> str:
     """
-    Prova a capire il paese dai classici header di edge/proxy.
-    Se non c'è niente, ritorna 'unknown'.
+    1. Prova a leggere header geo (se in futuro metti un proxy/CDN che li aggiunge)
+    2. Se non ci sono, usa l'IP da X-Forwarded-For e fa geo-IP con ipapi.co
     """
-    for h in ("cf-ipcountry", "x-vercel-ip-country", "x-country", "x-geo-country"):
+    # 1) Header "classici" se un giorno ci metti davanti Vercel/Cloudflare/LB custom
+    for h in (
+        "cf-ipcountry",
+        "x-vercel-ip-country",
+        "x-country",
+        "x-geo-country",
+        "x-appengine-country",  # per compat App Engine/LB
+        "x-user-country",
+    ):
         v = request.headers.get(h)
         if v:
-            return v.strip()
+            return v.strip().upper()
+
+    # 2) Recupera l'IP reale (primo IP della catena X-Forwarded-For)
+    xff = request.headers.get("x-forwarded-for")
+    ip = None
+    if xff:
+        ip = xff.split(",")[0].strip()
+    elif request.client:
+        ip = request.client.host
+
+    # IP locali / privati -> niente geoloc
+    if not ip or ip.startswith(("127.", "10.", "192.168.", "172.16.", "172.17.", "172.18.", "172.19.",
+                                "172.20.", "172.21.", "172.22.", "172.23.", "172.24.", "172.25.",
+                                "172.26.", "172.27.", "172.28.", "172.29.", "172.30.", "172.31.")):
+        return "unknown"
+
+    # 3) Geo-IP via ipapi.co (free con qualche limite, ma per ora va benissimo)
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            r = await client.get(f"https://ipapi.co/{ip}/country/")
+            if r.status_code == 200:
+                code = (r.text or "").strip().upper()
+                if code and len(code) == 2:
+                    return code
+    except Exception:
+        # in caso di errori (timeout, ecc.) non blocchiamo la view
+        pass
+
     return "unknown"
+
 
 @router.get("/cards/{slug}")
 async def public_card(slug: str, request: Request):
@@ -32,7 +70,7 @@ async def public_card(slug: str, request: Request):
         "type": "view",
         "ua": request.headers.get("user-agent"),
         "ref": request.headers.get("referer"),
-        "country": detect_country(request),
+        "country": await detect_country(request),  # 👈 ora è async
         "ts": now_utc(),
     })
 
@@ -64,12 +102,13 @@ async def public_vcard(slug: str, request: Request):
         "type": "vcard_download",
         "ua": request.headers.get("user-agent"),
         "ref": request.headers.get("referer"),
-        "country": detect_country(request),   # 👈 aggiunto
+        "country": await detect_country(request),  # 👈 idem
         "ts": now_utc(),
     })
 
     vcf = to_vcard(c.get("title") or "Contact", c.get("fields", []))
     headers = {"Content-Disposition": f'attachment; filename="{c["slug"]}.vcf"'}
+
     return Response(content=vcf, media_type="text/vcard", headers=headers)
 
 
@@ -104,7 +143,7 @@ async def public_social_click(
         "target": target,
         "ua": request.headers.get("user-agent"),
         "ref": request.headers.get("referer"),
-        "country": detect_country(request),   # 👈 aggiunto
+        "country": await detect_country(request),  # 👈 anche qui
         "ts": now_utc(),
     })
 

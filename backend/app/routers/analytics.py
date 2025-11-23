@@ -177,24 +177,28 @@ async def summary(id: str, user=Depends(get_current_user)):
     # --- 🌍 Geo analytics: top paesi ultimi 30 giorni ---
     top_countries = []
     pipeline_geo = [
-        {
-            "$match": {
-                "card_id": id,
-                "ts": {"$gte": since_30d},
-            }
-        },
-        {
-            "$group": {
-                "_id": {
-                    "$ifNull": ["$country", "unknown"]
-                },
-                "count": {"$sum": 1},
-            }
-        },
-        {"$sort": {"count": -1}},
-        {"$limit": 10},
-    ]
+    {
+        "$match": {
+            "card_id": id,
+            "ts": {"$gte": since_30d},
+        }
+    },
+    {
+        "$group": {
+            "_id": {
+                "$ifNull": ["$country", "unknown"]
+            },
+            "count": {"$sum": 1},
+        }
+    },
+    {"$sort": {"count": -1}},
+    {"$limit": 10},
+]
+
+    
     async for row in db.events.aggregate(pipeline_geo):
+        if row["_id"] == "unknown":
+            continue  # 👈 nasconde gli unknown dal grafico
         top_countries.append({
             "country": row["_id"],
             "count": row["count"],
