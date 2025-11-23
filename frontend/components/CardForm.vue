@@ -1,6 +1,6 @@
 <!-- frontend/components/CardForm.vue  -->
 <template>
-  <form @submit.prevent="onSubmit" class="space-y-6 max-w-6xl mx-auto">
+  <form @submit.prevent="onSubmit" class="space-y-6 max-w-6xl">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block mb-2.5 text-sm font-medium text-heading">Titolo/Nome</label>
@@ -32,26 +32,33 @@
     <div class="space-y-3">
       <div class="flex items-center justify-between">
         <label class="block mb-2.5 text-sm font-medium text-heading">Campi</label>
+
+        <!-- 🔹 Select, +Aggiungi e Salva affiancati -->
         <div class="flex gap-2">
           <select
             v-model="quickType"
-            class="block me-2 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
+            class="block px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
           >
             <option disabled value="">Aggiungi rapido…</option>
-            <option
-              v-for="opt in FIELD_TYPES"
-              :key="opt.value"
-              :value="opt.value"
-            >
+            <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
               {{ opt.label }}
             </option>
           </select>
+
           <button
             type="button"
             @click="addField(quickType || 'email')"
+class="text-white bg-warning box-border border border-transparent hover:bg-warning-strong focus:ring-4 focus:ring-warning-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"          >
+            + Aggiungi
+          </button>
+
+          <button type="button" class="text-white bg-danger box-border border border-transparent hover:bg-danger-strong focus:ring-4 focus:ring-danger-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">Reset</button>
+          <!-- 🟢 Bottone Salva spostato qui -->
+          <button
+            type="submit"
             class="text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"
           >
-            + Aggiungi
+            Salva
           </button>
         </div>
       </div>
@@ -72,11 +79,7 @@
             @change="applyTypeDefaults(f)"
             class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
           >
-            <option
-              v-for="opt in FIELD_TYPES"
-              :key="opt.value"
-              :value="opt.value"
-            >
+            <option v-for="opt in FIELD_TYPES" :key="opt.value" :value="opt.value">
               {{ opt.label }}
             </option>
           </select>
@@ -139,11 +142,7 @@
               stroke="currentColor"
               stroke-width="3"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 6l12 12M18 6L6 18"
-              />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
         </div>
@@ -170,6 +169,7 @@
       </label>
     </div>
 
+    <!-- Tema grafico -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block mb-2.5 text-sm font-medium text-heading">Tema grafico</label>
@@ -186,9 +186,7 @@
       </div>
     </div>
 
-    <button class="px-4 py-2 bg-black text-white rounded">
-      Salva
-    </button>
+    <!-- 🔻 vecchio bottone Salva rimosso da qui -->
   </form>
 </template>
 
@@ -242,12 +240,14 @@ const FIELD_CONFIG = {
   whatsapp: {
     label: 'WhatsApp',
     placeholder: 'https://wa.me/39333xxxxxxx',
-    urlLike: true
+    urlLike: true,
+    prefix: 'https://wa.me/'
   },
   telegram: {
     label: 'Telegram',
     placeholder: 'https://t.me/username',
-    urlLike: true
+    urlLike: true,
+    prefix: 'https://t.me/'
   },
   github: {
     label: 'GitHub',
@@ -301,33 +301,27 @@ const FIELD_CONFIG = {
   }
 }
 
-// helper per recuperare meta in modo sicuro
 function getFieldMeta (type) {
   const key = String(type || '').toLowerCase()
   return FIELD_CONFIG[key] || FIELD_CONFIG.email
 }
 
-// array per il <select> (usa la config)
 const FIELD_TYPES = Object.entries(FIELD_CONFIG).map(([value, meta]) => ({
   value,
   label: meta.label,
   placeholder: meta.placeholder
 }))
 
-// campo di default
 const defaultField = (type = 'email') => {
   const meta = getFieldMeta(type)
   return {
     type,
     label: meta.label,
-    value: '',
+    value: meta.prefix || '',
     visible: true
   }
 }
 
-/* --------------------------------
- * PROPS / EMIT / FORM
- * -------------------------------- */
 const props = defineProps({
   modelValue: { type: Object, default: () => ({}) }
 })
@@ -347,30 +341,10 @@ const form = reactive({
 
 watch(form, () => emit('update:modelValue', form), { deep: true })
 
-/* --------------------------------
- * GESTIONE CAMPI
- * -------------------------------- */
-const quickType = ref('')
+const quickType = ref('email')
 
 const addField = (type) => {
-  const t = String(type || '').toLowerCase()
-  if (!t) return
-
-  // evita duplicati dallo "Aggiungi rapido"
-  const alreadyExists = form.fields.some(
-    f => String(f.type || '').toLowerCase() === t
-  )
-  if (alreadyExists) {
-    if (process.client && typeof window !== 'undefined') {
-      // puoi sostituire alert con un toast / notification custom se vuoi
-      window.alert(`Il campo "${getFieldMeta(t).label}" è già presente.`)
-    }
-    return
-  }
-
-  form.fields.push(defaultField(t))
-  // reset selettore dopo l'aggiunta
-  quickType.value = ''
+  form.fields.unshift(defaultField(type))
 }
 
 const removeField = (i) => {
@@ -396,9 +370,12 @@ const applyTypeDefaults = (f) => {
   ) {
     f.label = meta.label
   }
+
+  if (!f.value && meta.prefix) {
+    f.value = meta.prefix
+  }
 }
 
-// normalizzazione valori (aggiunta https:// per i campi urlLike)
 const normalizeValue = (f) => {
   const v = (f.value || '').trim()
   const meta = getFieldMeta(f?.type)
@@ -410,9 +387,6 @@ const normalizeValue = (f) => {
   }
 }
 
-/* --------------------------------
- * SUBMIT
- * -------------------------------- */
 const onSubmit = () => {
   const cleaned = {
     title: (form.title || '').trim(),

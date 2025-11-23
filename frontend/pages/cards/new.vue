@@ -8,13 +8,32 @@
   </section>
 </template>
 
-
 <script setup>
 import CardForm from '~/components/CardForm.vue'
+
+/* 🟦 IMPORT DEL TOAST */
+const { success, error: toastError } = useToast()
+
 const form = ref({})
 const { $api } = useApi()
+
+/* 🟩 FUNZIONE DI SALVATAGGIO CON TOAST */
 const save = async (payload) => {
-  const c = await $api('/cards', { method:'POST', body: payload })
-  navigateTo(`/cards/${c.id}`)
+  try {
+    const c = await $api('/cards', {
+      method: 'POST',
+      body: payload
+    })
+
+    /* 🟢 TOAST DI SUCCESSO */
+    success('Card creata con successo!')
+
+    navigateTo(`/cards/${c.id}`)
+  } catch (err) {
+    console.error(err)
+
+    /* 🔴 TOAST DI ERRORE (AGGIUNTIVO) */
+    toastError('Errore durante la creazione della card.')
+  }
 }
 </script>

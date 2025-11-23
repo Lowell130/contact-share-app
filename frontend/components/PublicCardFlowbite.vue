@@ -10,91 +10,151 @@
         >
       
 
-          <!-- HEADER / AVATAR / TITOLO -->
-          <div class="flex flex-col items-center pb-3">
-            <img
-              v-if="card.avatar_url"
-              class="w-40 h-40 mb-3 rounded-full shadow-lg object-cover"
-              :src="card.avatar_url"
-              :alt="card.title"
-            />
-            <img
-              v-else
-              class="w-40 h-40 mb-3 rounded-full shadow-lg border border-amber-400"
-              src="/assets/images/profile-picture-3.jpg"
-              alt="Profile"
-            />
+   <!-- HEADER / AVATAR / TITOLO + INFO -->
+<div class="pb-4 md:pb-4">
+  <div class="flex flex-col md:flex-row md:items-center md:gap-6">
+    <!-- Avatar -->
+<div class="flex justify-center md:justify-start">
+  <div class="relative w-32 h-32 md:w-36 md:h-36 rounded-full overflow-hidden
+              shadow-sm bg-neutral-50
+              ring-1 ring-gray-200 
+              outline outline-[6px] outline-gray-100">
+    
+    <img
+      v-if="card.avatar_url"
+      :src="card.avatar_url"
+      :alt="card.title"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
 
-            <h5
-              class="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
-            >
-              <span
-                class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400"
-              >
-                {{ card.title }}</span
-              >
-            </h5>
+    <img
+      v-else
+      src="/assets/images/profile-picture-3.jpg"
+      alt="Profile"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+  </div>
+</div>
 
-            <!-- Ruolo / Azienda -->
-            <span
-              v-if="subtitle"
-              class="bg-yellow-100 text-yellow-800 shadow text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-yellow-900 dark:text-yellow-300 mb-2"
-            >
-              {{ subtitle }}
-            </span>
 
-            <!-- INFO PRINCIPALI (email / telefono / sito) -->
-            <div
-              class="mt-2 space-y-1 text-sm text-gray-700 dark:text-gray-300 text-center"
-            >
-              <div v-if="primary.email">
-                📧
-                <a
-                  :href="`mailto:${primary.email}`"
-                  class="underline hover:no-underline"
-                >
-                  {{ primary.email }}
-                </a>
-              </div>
-              <div v-if="primary.phone">
-                📱
-                <a
-                  :href="`tel:${primary.phone.replace(/\\s+/g, '')}`"
-                  class="underline hover:no-underline"
-                >
-                  {{ primary.phone }}
-                </a>
-              </div>
-              <div v-if="primary.website">
-                🌐
-                <a
-                  :href="primary.websiteHref"
-                  target="_blank"
-                  rel="noopener"
-                  class="underline hover:no-underline"
-                >
-                  {{ primary.website }}
-                </a>
-              </div>
-            </div>
-          </div>
 
-          <!-- BIO -->
 
-          <p class="mb-3 text-center text-body text-gray-400">
-            {{ card.notes }}
-          </p>
+    <!-- Testi principali -->
+    <div class="mt-4 md:mt-0 w-full text-center md:text-left space-y-3">
+      <!-- Titolo -->
+      <h5 class="text-2xl md:text-3xl font-bold tracking-tight text-gray-700 dark:text-white">
+      
+          {{ card.title }}
+        
+      </h5>
 
-          <!-- vCard -->
-          <div class="mt-4 flex items-center justify-center gap-3">
-            <a
-              v-if="showVcard"
-              :href="vcardUrl"
-              class="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-            >
-              💾 Scarica vCard
-            </a>
-          </div>
+      <!-- Ruolo / Azienda -->
+      <div v-if="subtitle" class="shadow justify-center md:justify-start rounded-full inline-flex items-center px-2 py-1 ring-1 ring-inset ring-default text-heading text-sm font-medium bg-neutral-primary-soft">
+      
+     
+       <span class="text-gray-500">   {{ subtitle }} </span>
+        
+      
+      </div>
+
+      <!-- INFO PRINCIPALI (email / telefono / sito) -->
+      <div class="mt-2 space-y-1.5 text-sm text-gray-700 dark:text-gray-300">
+        <!-- Email -->
+        <div
+          v-if="primary.email"
+          class="flex items-center justify-center md:justify-start gap-2"
+        >
+          <span
+            class="inline-flex items-center justify-center w-7 h-7 rounded-full
+                   bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+            aria-hidden="true"
+          >
+            <!-- icona email -->
+          <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-width="1" d="m3.5 5.5 7.893 6.036a1 1 0 0 0 1.214 0L20.5 5.5M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/>
+</svg>
+
+          </span>
+          <a
+            :href="`mailto:${primary.email}`"
+            class="underline decoration-gray-300 hover:decoration-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
+          >
+            {{ primary.email }}
+          </a>
+        </div>
+
+        <!-- Telefono -->
+        <div
+          v-if="primary.phone"
+          class="flex items-center justify-center md:justify-start gap-2"
+        >
+          <span
+            class="inline-flex items-center justify-center w-7 h-7 rounded-full
+                   bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+            aria-hidden="true"
+          >
+            <!-- icona telefono -->
+        <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z"/>
+</svg>
+
+          </span>
+          <a
+            :href="`tel:${primary.phone.replace(/\\s+/g, '')}`"
+            class="underline decoration-gray-300 hover:decoration-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
+          >
+            {{ primary.phone }}
+          </a>
+        </div>
+
+        <!-- Website -->
+        <div
+          v-if="primary.website"
+          class="flex items-center justify-center md:justify-start gap-2"
+        >
+          <span
+            class="inline-flex items-center justify-center w-7 h-7 rounded-full
+                   bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+            aria-hidden="true"
+          >
+            <!-- icona globe -->
+   <svg class="w-[18px] h-[18px] text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-width="1" d="M4.37 7.657c2.063.528 2.396 2.806 3.202 3.87 1.07 1.413 2.075 1.228 3.192 2.644 1.805 2.289 1.312 5.705 1.312 6.705M20 15h-1a4 4 0 0 0-4 4v1M8.587 3.992c0 .822.112 1.886 1.515 2.58 1.402.693 2.918.351 2.918 2.334 0 .276 0 2.008 1.972 2.008 2.026.031 2.026-1.678 2.026-2.008 0-.65.527-.9 1.177-.9H20M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+</svg>
+
+          </span>
+          <a
+            :href="primary.websiteHref"
+            target="_blank"
+            rel="noopener"
+            class="underline decoration-gray-300 hover:decoration-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300"
+          >
+            {{ primary.website }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- separatore -->
+
+<div class="inline-flex items-center justify-center w-full">
+    <hr class="w-64 h-1 my-8 bg-neutral-quaternary border-0 rounded-sm">
+    <div class="absolute px-4 -translate-x-1/2 bg-neutral-primary left-1/2">
+        <svg class="w-6 h-6 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11V8a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1Zm0 0v2a4 4 0 0 1-4 4H5m14-6V8a1 1 0 0 0-1-1h-3a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1Zm0 0v2a4 4 0 0 1-4 4h-1"/></svg>
+    </div>
+</div>
+
+  <!-- BIO / NOTE -->
+  <p
+    v-if="card.notes"
+    class="mt-3 mb-4 font-light text-gray-500 dark:text-gray-400 text-sm"
+  >
+    {{ card.notes }}
+  </p>
+</div>
+
+
 
           <!-- SOLO SOCIAL NELLA LISTA -->
           <PublicSocialList
@@ -102,14 +162,86 @@
             :card-id="card.id"
             :fields="visibleFields"
           />
-          <!-- QR -->
-          <div class="flex items-center justify-center">
+     
+
+          <!-- BLOCCO CONDIVISIONE / QR + VCARD -->
+<div class="mt-6">
+  <!-- <div
+    class="relative overflow-hidden rounded-2xl border border-gray-200/80
+           bg-gradient-to-br from-slate-50 via-white to-emerald-50
+           px-4 py-4 sm:px-6 sm:py-5"
+  > -->
+   <div
+    class="relative overflow-hidden rounded-2xl border border-gray-200/80
+           
+           px-4 py-4 sm:px-6 sm:py-5 shadow-sm"
+  >
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+      <!-- QR + testo esplicativo -->
+      <div class="flex items-center gap-4 md:gap-5">
+        <!-- QR incorniciato -->
+        <div class="relative shrink-0">
+          <div
+            class="rounded-2xl bg-white/90 border border-white shadow-md
+                   p-2"
+          >
             <img
               :src="qrUrl"
               :alt="`QR code dei contatti di ${card.title}`"
-              class="w-40 h-40 rounded border border-gray-200 dark:border-gray-700"
+              class="w-25 h-25 sm:w-32 sm:h-32 rounded-md"
             />
           </div>
+        </div>
+
+        <!-- Testo -->
+        <div class="text-sm text-gray-700">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-600 mb-1">
+            Condividi il profilo
+          </p>
+          <p class="text-sm font-medium">
+            Inquadra il QR per aprire questo biglietto digitale.
+          </p>
+          <p class="mt-1 text-xs text-gray-500">
+            Ideale per badge, firma email, slide o social.
+          </p>
+        </div>
+      </div>
+
+      <!-- Azione vCard -->
+      <div
+     class="flex flex-col md:flex-col justify-center items-center md:items-end gap-2 mt-1 md:mt-0"
+      >
+        <a
+          v-if="showVcard"
+          :href="vcardUrl"
+          class="inline-flex items-center justify-center
+                 text-xs font-medium leading-5
+                 text-body bg-neutral-secondary-medium
+                 box-border border border-default-medium
+                 hover:bg-neutral-tertiary-medium hover:text-heading
+                 focus:ring-4 focus:ring-neutral-tertiary
+                 shadow-xs rounded-full px-4 py-2
+                 focus:outline-none"
+        >
+          <!-- piccola icona rubrica -->
+      
+          Scarica vCard
+        </a>
+
+        <p
+          v-if="showVcard"
+          class="text-[11px] text-gray-500 md:text-right"
+        >
+          Aggiungi subito <span class="font-medium">{{ card.title }}</span>
+          alla tua rubrica.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
         </div>
       </div>
     </div>
