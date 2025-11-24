@@ -170,14 +170,23 @@
     </div>
 
     <div class="flex flex-wrap gap-6">
-      <label class="flex items-center select-none text-sm font-medium text-heading gap-2">
-        <input
-          type="checkbox"
-          v-model="form.is_public"
-          class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft cursor-pointer"
-        />
-        <span>Pubblica</span>
-      </label>
+      <div class="w-full">
+        <label class="block mb-2.5 text-sm font-medium text-heading">Visibilità</label>
+        <div class="flex flex-col gap-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" v-model="visibilityMode" value="private" class="w-4 h-4 text-brand focus:ring-brand border-gray-300" />
+            <span class="text-sm text-heading">Privata (Nessuno può vederla)</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" v-model="visibilityMode" value="public_noindex" class="w-4 h-4 text-brand focus:ring-brand border-gray-300" />
+            <span class="text-sm text-heading">Pubblica (Solo chi ha il link, no motori di ricerca)</span>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="radio" v-model="visibilityMode" value="public_indexed" class="w-4 h-4 text-brand focus:ring-brand border-gray-300" />
+            <span class="text-sm text-heading">Pubblica (Indicizzata su Google/Bing)</span>
+          </label>
+        </div>
+      </div>
 
       <label class="flex items-center select-none text-sm font-medium text-heading gap-2">
         <input
@@ -211,7 +220,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, computed } from 'vue'
 
 /* --------------------------------
  * CONFIG UNICA PER I CAMPI
@@ -356,7 +365,27 @@ const form = reactive({
     ? JSON.parse(JSON.stringify(props.modelValue.fields))
     : [],
   is_public: props.modelValue.is_public ?? true,
+  is_indexed: props.modelValue.is_indexed ?? true,
   allow_vcard: props.modelValue.allow_vcard ?? true
+})
+
+const visibilityMode = computed({
+  get() {
+    if (!form.is_public) return 'private'
+    return form.is_indexed ? 'public_indexed' : 'public_noindex'
+  },
+  set(val) {
+    if (val === 'private') {
+      form.is_public = false
+      form.is_indexed = false // doesn't matter much, but cleaner
+    } else if (val === 'public_noindex') {
+      form.is_public = true
+      form.is_indexed = false
+    } else {
+      form.is_public = true
+      form.is_indexed = true
+    }
+  }
 })
 
 watch(form, () => emit('update:modelValue', form), { deep: true })
@@ -438,6 +467,7 @@ const onSubmit = () => {
     notes: (form.bio || '').trim(),
     theme: (form.theme || 'minimal'),
     is_public: !!form.is_public,
+    is_indexed: !!form.is_indexed,
     allow_vcard: !!form.allow_vcard,
     fields: (form.fields || [])
       .filter(x => x && typeof x === 'object')

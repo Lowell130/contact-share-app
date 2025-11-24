@@ -12,7 +12,7 @@ router = APIRouter(prefix="/cards", tags=["cards"])
 def card_projection():
     return {
         "_id": 1, "user_id": 1, "title": 1, "slug": 1, "fields": 1, "theme": 1,
-        "avatar_url": 1, "is_public": 1, "allow_vcard": 1, "notes": 1,
+        "avatar_url": 1, "is_public": 1, "is_indexed": 1, "allow_vcard": 1, "notes": 1,
         "created_at": 1, "updated_at": 1
     }
 

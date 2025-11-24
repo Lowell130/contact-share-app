@@ -19,21 +19,30 @@ import PublicCard from '~/components/PublicCard.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const reqUrl = useRequestURL()
 
-const card = ref(null)
-const error = ref('')
-const publicUrl = computed(() => `${location.origin}/c/${route.params.slug}`)
+const publicUrl = computed(() => `${reqUrl.protocol}//${reqUrl.host}/c/${route.params.slug}`)
 
-const fetchPublicCard = async () => {
-  try {
-    const url = `${config.public.apiBase}/public/cards/${encodeURIComponent(route.params.slug)}`
-    card.value = await $fetch(url, { headers: { Accept: 'application/json' } })
-  } catch (e) {
-    console.error(e)
-    error.value = 'Impossibile caricare la card pubblica.'
+const { data: card, error: fetchError } = await useFetch(
+  () => `${config.public.apiBase}/public/cards/${encodeURIComponent(route.params.slug)}`,
+  {
+    headers: { Accept: 'application/json' },
+    key: `card-${route.params.slug}`
   }
-}
+)
 
-onMounted(fetchPublicCard)
-watch(() => route.params.slug, fetchPublicCard)
+const error = computed(() => {
+  if (fetchError.value) return 'Impossibile caricare la card pubblica.'
+  if (!card.value) return 'Card non trovata.'
+  return ''
+})
+
+useHead({
+  meta: computed(() => {
+    if (card.value && !card.value.is_indexed) {
+      return [{ name: 'robots', content: 'noindex' }]
+    }
+    return []
+  })
+})
 </script>

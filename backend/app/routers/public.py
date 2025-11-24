@@ -85,6 +85,7 @@ async def public_card(slug: str, request: Request):
         "fields": c.get("fields", []),
         "theme": c.get("theme"),
         "avatar_url": c.get("avatar_url"),
+        "is_indexed": c.get("is_indexed", True),
         "allow_vcard": c.get("allow_vcard", True),
         "cta": "Salva in rubrica",
     }
