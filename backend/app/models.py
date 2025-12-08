@@ -34,7 +34,10 @@ class CardIn(BaseModel):
     slug: Optional[str] = None
     fields: List[CardField] = []
     # theme prima era Optional[dict]; ora è una stringa ammessa con default "minimal"
-    theme: Optional[Literal["minimal", "gradient", "dark", "flowbite"]] = "minimal"
+    theme: Optional[Literal[
+        "minimal", "gradient", "dark", "flowbite",
+        "modern_emerald", "modern_blue", "modern_indigo", "modern_rose", "modern_orange"
+    ]] = "minimal"
     avatar_url: Optional[str] = None
     is_public: bool = True
     is_indexed: bool = True

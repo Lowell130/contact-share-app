@@ -2,18 +2,17 @@
   <component
     :is="templateComponent"
     :card="card"
+    :publicUrl="publicUrl"
     :vcardUrl="vcardUrl"
     :qrUrl="qrUrl"
     :visibleFields="visibleFields"
+    :themeName="card.theme"
   />
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import PublicCardMinimal from './PublicCardMinimal.vue'
-import PublicCardGradient from './PublicCardGradient.vue'
-import PublicCardDark from './PublicCardDark.vue'
-import PublicCardFlowbite from './PublicCardFlowbite.vue'   // <-- NEW
+import PublicCardModern from './PublicCardModern.vue'
 
 const props = defineProps({
   card: { type: Object, required: true },
@@ -33,11 +32,7 @@ const qrUrl = computed(() =>
   `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(props.publicUrl)}`
 )
 
-const templateComponent = computed(() => {
-  const t = (props.card?.theme || '').toLowerCase()
-  if (t === 'gradient') return PublicCardGradient
-  if (t === 'dark') return PublicCardDark
-  if (t === 'flowbite') return PublicCardFlowbite   // <-- NEW
-  return PublicCardMinimal
-})
+// Now we only use Modern for everything.
+// Old themes (minimal, dark, gradient) will fallback to Modern defaults.
+const templateComponent = computed(() => PublicCardModern)
 </script>
