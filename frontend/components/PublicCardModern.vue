@@ -226,7 +226,7 @@
                   :class="[colors.btnHoverText, colors.btnHoverBg, colors.btnRing]"
                 >
                   <!-- piccola icona rubrica -->
-                  Download vCard
+                  vCard
                 </a>
 
                 <p
