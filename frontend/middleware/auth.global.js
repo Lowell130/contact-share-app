@@ -17,7 +17,7 @@ export default defineNuxtRouteMiddleware((to) => {
   if (isPublic) return
 
   // Rotte che richiedono auth (puoi estendere l'elenco)
-  const protectedPrefixes = ['/dashboard', '/cards', '/analytics']
+  const protectedPrefixes = ['/dashboard', '/cards', '/analytics', '/account', '/settings']
   const needsAuth = protectedPrefixes.some(p => to.path.startsWith(p))
 
   if (needsAuth && !isLoggedIn.value) {

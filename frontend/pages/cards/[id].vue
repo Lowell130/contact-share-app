@@ -2,18 +2,18 @@
   <section v-if="card" class="flex justify-center pt-6">
     <div class="w-full max-w-4xl">
 
-      <h1 class="text-2xl font-bold mb-4 text-center">Modifica Card</h1>
+      <h1 class="text-2xl font-bold mb-4 text-center">Edit Card</h1>
       <CardForm v-model="form" :cardId="card.id" @submit="save" />
 
       <div class="mt-6 flex flex-wrap gap-3">
-        <button @click="downloadVcard" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">Scarica vCard (privata)</button>
-        <button @click="openQr" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">QR (privato)</button>
-        <NuxtLink :to="`/c/${card.slug}`" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none" target="_blank">Apri Pubblico</NuxtLink>
+        <button @click="downloadVcard" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">Download vCard (private)</button>
+        <button @click="openQr" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">QR (private)</button>
+        <NuxtLink :to="`/c/${card.slug}`" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none" target="_blank">Open Public</NuxtLink>
         <a v-if="card.is_public && card.allow_vcard"
            :href="`${apiBase}/public/cards/${card.slug}/vcard`"
            class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"
            target="_blank">
-          Scarica vCard (pubblica)
+          Download vCard (public)
         </a>
       </div>
 
@@ -55,15 +55,15 @@ const save = async (payload) => {
     })
 
     /* 🟢 TOAST DI SUCCESSO */
-    success('Card aggiornata con successo!')
+    success('Card updated successfully!')
 
     await load()
   } catch (e) {
     console.error(e)
-    error.value = 'Salvataggio fallito.'
+    error.value = 'Save failed.'
 
     /* 🔴 TOAST DI ERRORE */
-    toastError('Errore durante l’aggiornamento della card.')
+    toastError('Error updating card.')
   }
 }
 
@@ -88,13 +88,13 @@ const downloadVcard = async () => {
     saveBlob(blob, filename)
 
     /* 🟢 SUCCESSO */
-    success('vCard privata scaricata!')
+    success('Private vCard downloaded!')
   } catch (e) {
     console.error(e)
-    error.value = 'Impossibile scaricare la vCard privata.'
+    error.value = 'Unable to download private vCard.'
 
     /* 🔴 ERRORE */
-    toastError('Errore durante il download della vCard.')
+    toastError('Error downloading vCard.')
   }
 }
 
@@ -109,13 +109,13 @@ const openQr = async () => {
     setTimeout(() => URL.revokeObjectURL(objUrl), 5000)
 
     /* 🟢 SUCCESSO */
-    success('QR Code aperto.')
+    success('QR Code opened.')
   } catch (e) {
     console.error(e)
-    error.value = 'Impossibile aprire il QR privato.'
+    error.value = 'Unable to open private QR.'
 
     /* 🔴 ERRORE */
-    toastError('Errore durante la generazione del QR.')
+    toastError('Error generating QR.')
   }
 }
 </script>

@@ -4,11 +4,11 @@
     <!-- Header di Benvenuto -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
-      <p class="text-gray-600 mt-2">Benvenuto nella tua panoramica.</p>
+      <p class="text-gray-600 mt-2">Welcome to your overview.</p>
     </div>
 
     <div v-if="loading" class="text-center py-12">
-      <p class="text-gray-500">Caricamento dati...</p>
+      <p class="text-gray-500">Loading data...</p>
     </div>
 
     <div v-else class="space-y-8">
@@ -17,7 +17,7 @@
         <!-- Visite Totali -->
         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-medium text-gray-500">Visite Totali (7g)</h3>
+            <h3 class="text-sm font-medium text-gray-500">Total Views (7d)</h3>
             <div class="p-2 bg-blue-50 rounded-lg">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -78,33 +78,33 @@
               <h3 class="text-base font-medium text-gray-900 truncate">{{ topCard.title }}</h3>
               <p class="text-sm text-gray-500 truncate">/c/{{ topCard.slug }}</p>
               <div class="mt-2 flex items-center gap-4 text-sm">
-                <span class="text-blue-600 font-medium">{{ topCard._stats?.views_7d || 0 }} visite</span>
+                <span class="text-blue-600 font-medium">{{ topCard._stats?.views_7d || 0 }} views</span>
                 <NuxtLink :to="`/analytics/${topCard.id}`" class="text-gray-500 hover:text-gray-700 underline">
-                  Vedi dettagli
+                  View details
                 </NuxtLink>
               </div>
             </div>
           </div>
           <div v-else class="text-center py-6 text-gray-500">
-            Nessuna card attiva con visite recenti.
+            No active cards with recent visits.
           </div>
         </div>
 
         <!-- Azioni Rapide -->
         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-center">
-          <h2 class="text-lg font-semibold text-gray-900 mb-4">Azioni Rapide</h2>
+          <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
           <div class="space-y-3">
             <NuxtLink 
               to="/cards/new" 
               class="block w-full py-3 px-4 bg-black text-white text-center rounded-lg font-medium hover:bg-gray-800 transition-colors"
             >
-              + Crea Nuova Card
+              + Create New Card
             </NuxtLink>
             <NuxtLink 
               to="/cards" 
               class="block w-full py-3 px-4 bg-white border border-gray-300 text-gray-700 text-center rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
-              Gestisci le tue Card
+              Manage your Cards
             </NuxtLink>
           </div>
         </div>

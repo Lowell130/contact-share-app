@@ -43,12 +43,46 @@ const error = computed(() => {
   return ''
 })
 
+const ogImage = computed(() => {
+  if (!card.value?.avatar_url) return ''
+  if (card.value.avatar_url.startsWith('http')) return card.value.avatar_url
+  return `${config.public.apiBase}${card.value.avatar_url}`
+})
+
 useHead({
+  title: computed(() => card.value?.title || 'Contact Share'),
   meta: computed(() => {
-    if (card.value && !card.value.is_indexed) {
-      return [{ name: 'robots', content: 'noindex' }]
+    const meta = []
+    
+    if (card.value) {
+      // Basic Description
+      const desc = card.value.notes || `Contatti di ${card.value.title}`
+      meta.push({ name: 'description', content: desc })
+
+      // Open Graph / Facebook
+      meta.push({ property: 'og:type', content: 'profile' })
+      meta.push({ property: 'og:title', content: card.value.title })
+      meta.push({ property: 'og:description', content: desc })
+      meta.push({ property: 'og:url', content: publicUrl.value })
+      if (ogImage.value) {
+        meta.push({ property: 'og:image', content: ogImage.value })
+      }
+
+      // Twitter
+      meta.push({ name: 'twitter:card', content: 'summary_large_image' })
+      meta.push({ name: 'twitter:title', content: card.value.title })
+      meta.push({ name: 'twitter:description', content: desc })
+      if (ogImage.value) {
+        meta.push({ name: 'twitter:image', content: ogImage.value })
+      }
+
+      // Robots
+      if (!card.value.is_indexed) {
+        meta.push({ name: 'robots', content: 'noindex' })
+      }
     }
-    return []
+    
+    return meta
   })
 })
 </script>

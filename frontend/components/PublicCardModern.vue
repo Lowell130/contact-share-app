@@ -13,17 +13,20 @@
     <!-- HEADER / AVATAR / TITOLO + INFO -->
     <div class="pb-4 md:pb-4 relative">
       <!-- Edit Button for Owner -->
-      <div v-if="isOwner" class="absolute top-0 right-0 z-10">
-        <NuxtLink 
-          :to="`/cards/${card.id}`"
-          class="flex items-center gap-1 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-full shadow-sm hover:bg-gray-700 transition-colors"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-          </svg>
-          Modifica
-        </NuxtLink>
-      </div>
+      <!-- Edit Button for Owner -->
+      <ClientOnly>
+        <div v-if="isOwner" class="absolute top-0 right-0 z-10">
+          <NuxtLink 
+            :to="`/cards/${card.id}`"
+            class="flex items-center gap-1 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-full shadow-sm hover:bg-gray-700 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+            Edit
+          </NuxtLink>
+        </div>
+      </ClientOnly>
 
       <div class="flex flex-col md:flex-row md:items-center md:gap-6">
         <!-- Avatar -->
@@ -196,13 +199,13 @@
                 <!-- Testo -->
                 <div class="text-sm text-gray-700">
                   <p class="text-[11px] font-semibold uppercase tracking-[0.18em] mb-1" :class="colors.accentText">
-                    Condividi il profilo
+                    Share Profile
                   </p>
                   <p class="text-sm font-medium">
-                    Inquadra il QR per aprire questo biglietto digitale.
+                    Scan the QR to open this digital card.
                   </p>
                   <p class="mt-1 text-xs text-gray-500">
-                    Ideale per badge, firma email, slide o social.
+                    Ideal for badges, email signatures, slides, or social media.
                   </p>
                 </div>
               </div>
@@ -223,15 +226,15 @@
                   :class="[colors.btnHoverText, colors.btnHoverBg, colors.btnRing]"
                 >
                   <!-- piccola icona rubrica -->
-                  Scarica vCard
+                  Download vCard
                 </a>
 
                 <p
                   v-if="showVcard"
                   class="text-[11px] text-gray-500 md:text-right"
                 >
-                  Aggiungi subito <span class="font-medium">{{ card.title }}</span>
-                  alla tua rubrica.
+                  Add <span class="font-medium">{{ card.title }}</span>
+                  to your contacts now.
                 </p>
               </div>
             </div>

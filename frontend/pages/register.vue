@@ -2,12 +2,12 @@
   <div class="min-h-[80vh] flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-gray-50">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-        Crea il tuo account
+        Create your account
       </h2>
       <p class="mt-2 text-center text-sm text-gray-600">
-        Oppure
+        Or
         <NuxtLink to="/login" class="font-medium text-blue-600 hover:text-blue-500">
-          accedi se sei già registrato
+          log in if you already have an account
         </NuxtLink>
       </p>
     </div>
@@ -17,7 +17,7 @@
         <form class="space-y-6" @submit.prevent="onSubmit">
           <div>
             <label for="name" class="block text-sm font-medium text-gray-700">
-              Nome Completo
+              Full Name
             </label>
             <div class="mt-1">
               <input
@@ -33,7 +33,7 @@
 
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">
-              Indirizzo Email
+              Email Address
             </label>
             <div class="mt-1">
               <input
@@ -86,7 +86,7 @@
               :disabled="loading"
               class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {{ loading ? 'Creazione account...' : 'Crea account' }}
+              {{ loading ? 'Creating account...' : 'Create account' }}
             </button>
           </div>
         </form>
@@ -112,9 +112,9 @@ const onSubmit = async () => {
     await register(email.value, password.value, name.value)
     navigateTo('/dashboard')
   } catch (err) {
-    console.error('Errore registrazione', err)
+    console.error('Registration error', err)
     const detail = err?.data?.detail || err?.message
-    errorMsg.value = detail || 'Registrazione non riuscita'
+    errorMsg.value = detail || 'Registration failed'
   } finally {
     loading.value = false
   }

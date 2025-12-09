@@ -7,6 +7,7 @@
     <AppFooter />
        <!-- Host globale dei toast -->
     <AppToast />
+    <CookieBanner />
   </div>
 </template>
 
@@ -14,4 +15,5 @@
 import AppHeader from '~/components/AppHeader.vue'
 import AppFooter from '~/components/AppFooter.vue'
 import AppToast from '~/components/AppToast.vue'
+import CookieBanner from '~/components/CookieBanner.vue'
 </script>

@@ -17,7 +17,7 @@
         
         <!-- Overlay for upload -->
         <label v-if="cardId" class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity text-white text-xs font-medium">
-          Cambia
+          Change
           <input type="file" class="hidden" accept="image/*" @change="onFileSelect" />
         </label>
       </div>
@@ -25,13 +25,13 @@
       <div class="flex-1">
         <h3 class="text-lg font-medium text-gray-900">Avatar</h3>
         <p v-if="!cardId" class="text-sm text-gray-500 mt-1">
-          Salva la card per poter caricare un'immagine personalizzata.
-          <br>Verrà generato un avatar automatico se non ne carichi uno.
+          Save the card to upload a custom image.
+          <br>An automatic avatar will be generated if you don't upload one.
         </p>
         <div v-else class="mt-1">
           <p class="text-sm text-gray-500">
-            Clicca sull'immagine per caricarne una nuova.
-            <br>Formati supportati: JPG, PNG, WEBP.
+            Click on the image to upload a new one.
+            <br>Supported formats: JPG, PNG, WEBP.
           </p>
           <button 
             v-if="hasCustomAvatar"
@@ -42,7 +42,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            Rimuovi avatar personalizzato
+            Remove custom avatar
           </button>
         </div>
       </div>
@@ -50,7 +50,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block mb-2.5 text-sm font-medium text-heading">Titolo/Nome</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Title/Name</label>
         <input
           v-model="form.title"
           class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
@@ -58,27 +58,27 @@
         />
       </div>
       <div>
-        <label class="block mb-2.5 text-sm font-medium text-heading">Slug (opz.)</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Slug (opt.)</label>
         <input
           v-model="form.slug"
           class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body"
-          placeholder="es. John Doe"
+          placeholder="e.g. John Doe"
         />
       </div>
       <div class="md:col-span-2">
-        <label class="block mb-2.5 text-sm font-medium text-heading">Bio (breve)</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Bio (short)</label>
         <textarea
           v-model="form.bio"
           class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-3.5 shadow-xs placeholder:text-body"
           rows="3"
-          placeholder="Breve presentazione/claim sotto al titolo…"
+          placeholder="Short presentation/claim under the title…"
         />
       </div>
     </div>
 
     <div class="space-y-3">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <label class="block text-sm font-medium text-heading">Campi</label>
+        <label class="block text-sm font-medium text-heading">Fields</label>
 
         <!-- 🔹 Select, +Aggiungi e Salva affiancati -->
         <div class="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-start">
@@ -86,7 +86,7 @@
             v-model="quickType"
             class="block pe-8 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body w-full md:w-auto"
           >
-            <option disabled value="">Aggiungi campo</option>
+            <option disabled value="">Add field</option>
             <option
               v-for="opt in FIELD_TYPES"
               :key="opt.value"
@@ -105,7 +105,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            <span>Aggiungi</span>
+            <span>Add</span>
           </button>
 
           <button
@@ -125,13 +125,13 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
-            <span>Salva</span>
+            <span>Save</span>
           </button>
         </div>
       </div>
 
       <div v-if="!form.fields.length" class="text-sm text-gray-500">
-        Nessun campo. Usa “Aggiungi”.
+        No fields. Use “Add”.
       </div>
 
       <div
@@ -140,7 +140,7 @@
         class="grid grid-cols-12 gap-2 items-center shadow-sm rounded border border-gray-200 p-4"
       >
         <div class="col-span-12 md:col-span-3">
-          <label class="block mb-2.5 text-sm font-medium text-heading">Tipo</label>
+          <label class="block mb-2.5 text-sm font-medium text-heading">Type</label>
           <select
             v-model="f.type"
             @change="applyTypeDefaults(f)"
@@ -162,7 +162,7 @@
         </div>
 
         <div class="col-span-12 md:col-span-5">
-          <label class="block mb-2.5 text-sm font-medium text-heading">Valore</label>
+          <label class="block mb-2.5 text-sm font-medium text-heading">Value</label>
           <input
             v-model="f.value"
             @blur="normalizeValue(f)"
@@ -184,7 +184,7 @@
               class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium
                      focus:ring-2 focus:ring-brand-soft cursor-pointer"
             />
-            <span class="ms-2">Visibile</span>
+            <span class="ms-2">Visible</span>
           </label>
 
           <!-- Bottone rimuovi -->
@@ -199,7 +199,7 @@
                    shadow-xs
                    focus:ring-4 focus:ring-red-300
                    focus:outline-none"
-            title="Rimuovi"
+            title="Remove"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -218,19 +218,19 @@
 
     <div class="flex flex-wrap gap-6">
       <div class="w-full">
-        <label class="block mb-2.5 text-sm font-medium text-heading">Visibilità</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Visibility</label>
         <div class="flex flex-col gap-2">
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="visibilityMode" value="private" class="w-4 h-4 text-brand focus:ring-brand border-gray-300" />
-            <span class="text-sm text-heading">Privata (Nessuno può vederla)</span>
+            <span class="text-sm text-heading">Private (No one can see it)</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="visibilityMode" value="public_noindex" class="w-4 h-4 text-brand focus:ring-brand border-gray-300" />
-            <span class="text-sm text-heading">Pubblica (Solo chi ha il link, no motori di ricerca)</span>
+            <span class="text-sm text-heading">Public (Only those with the link, no search engines)</span>
           </label>
           <label class="flex items-center gap-2 cursor-pointer">
             <input type="radio" v-model="visibilityMode" value="public_indexed" class="w-4 h-4 text-brand focus:ring-brand border-gray-300" />
-            <span class="text-sm text-heading">Pubblica (Indicizzata su Google/Bing)</span>
+            <span class="text-sm text-heading">Public (Indexed on Google/Bing)</span>
           </label>
         </div>
       </div>
@@ -241,19 +241,19 @@
           v-model="form.allow_vcard"
           class="w-4 h-4 border border-default-medium rounded-xs bg-neutral-secondary-medium focus:ring-2 focus:ring-brand-soft cursor-pointer"
         />
-        <span>Consenti vCard</span>
+        <span>Allow vCard</span>
       </label>
     </div>
 
     <!-- Tema grafico -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block mb-2.5 text-sm font-medium text-heading">Tema grafico</label>
+        <label class="block mb-2.5 text-sm font-medium text-heading">Theme</label>
         <select
           v-model="form.theme"
           class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
         >
-          <option disabled value="">Scegli un tema...</option>
+          <option disabled value="">Choose a theme...</option>
           <option value="modern_emerald">Modern Emerald</option>
           <option value="modern_blue">Modern Blue</option>
           <option value="modern_indigo">Modern Indigo</option>
@@ -280,17 +280,17 @@ const FIELD_CONFIG = {
     urlLike: false
   },
   mobile: {
-    label: 'Cellulare',
+    label: 'Mobile',
     placeholder: '+39 3xx xxx xxxx',
     urlLike: false
   },
   phone: {
-    label: 'Telefono',
+    label: 'Phone',
     placeholder: '+39 0xx xxx xxxx',
     urlLike: false
   },
   url: {
-    label: 'Sito web',
+    label: 'Website',
     placeholder: 'https://example.com',
     urlLike: true
   },
@@ -357,23 +357,23 @@ const FIELD_CONFIG = {
     urlLike: true
   },
   company: {
-    label: 'Azienda',
-    placeholder: 'Ragione sociale',
+    label: 'Company',
+    placeholder: 'Company Name',
     urlLike: false
   },
   role: {
-    label: 'Ruolo',
-    placeholder: 'es. Product Manager',
+    label: 'Role',
+    placeholder: 'e.g. Product Manager',
     urlLike: false
   },
   address: {
-    label: 'Indirizzo',
-    placeholder: 'Via Esempio 1, Roma',
+    label: 'Address',
+    placeholder: '123 Example St, City',
     urlLike: false
   },
   note: {
-    label: 'Note',
-    placeholder: 'Testo libero',
+    label: 'Notes',
+    placeholder: 'Free text',
     urlLike: false
   }
 }
@@ -532,21 +532,21 @@ const onFileSelect = async (e) => {
     })
     // Update form avatar
     form.avatar_url = res.avatar_url
-    toast.success('Avatar aggiornato!')
+    toast.success('Avatar updated!')
   } catch (e) {
     // Error handled by useApi usually
   }
 }
 
 const deleteAvatar = async () => {
-  if (!confirm('Vuoi rimuovere l\'avatar personalizzato?')) return
+  if (!confirm('Do you want to remove the custom avatar?')) return
   
   try {
     const res = await $api(`/cards/${props.cardId}/avatar`, {
       method: 'DELETE'
     })
     form.avatar_url = res.avatar_url
-    toast.success('Avatar rimosso.')
+    toast.success('Avatar removed.')
   } catch (e) {
     // Error handled by useApi
   }
@@ -556,7 +556,7 @@ const onSubmit = () => {
   // Validation: check for empty fields
   const hasEmptyFields = form.fields.some(f => !f.value || !f.value.trim())
   if (hasEmptyFields) {
-    toast.error('Compila tutti i campi aggiunti o rimuovili.')
+    toast.error('Fill in all added fields or remove them.')
     return
   }
 

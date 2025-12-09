@@ -2,7 +2,7 @@
 <template>
   <section class="flex justify-center pt-6">
     <div class="w-full max-w-4xl">
-      <h1 class="text-2xl font-bold mb-4 text-center">Nuova Card</h1>
+      <h1 class="text-2xl font-bold mb-4 text-center">New Card</h1>
       <CardForm v-model="form" @submit="save" />
     </div>
   </section>
@@ -26,14 +26,14 @@ const save = async (payload) => {
     })
 
     /* 🟢 TOAST DI SUCCESSO */
-    success('Card creata con successo!')
+    success('Card created successfully!')
 
     navigateTo(`/cards/${c.id}`)
   } catch (err) {
     console.error(err)
 
     /* 🔴 TOAST DI ERRORE (AGGIUNTIVO) */
-    toastError('Errore durante la creazione della card.')
+    toastError('Error creating card.')
   }
 }
 </script>

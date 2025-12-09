@@ -5,12 +5,12 @@
       <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="text-center">
           <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-            <span class="block xl:inline">Il tuo biglietto da visita,</span>
-            <span class="block text-blue-600 xl:inline">reinventato.</span>
+            <span class="block xl:inline">Your business card,</span>
+            <span class="block text-blue-600 xl:inline">reinvented.</span>
           </h1>
           <p class="mx-auto mt-3 max-w-md text-base text-gray-500 sm:text-lg md:mt-5 md:max-w-3xl md:text-xl">
-            Crea, personalizza e condividi la tua identità professionale in pochi secondi. 
-            Sostenibile, smart e sempre aggiornato. Fai colpo al primo incontro.
+            Create, customize, and share your professional identity in seconds. 
+            Sustainable, smart, and always up-to-date. Make an impact at first sight.
           </p>
           
           <div class="mt-10 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center gap-4">
@@ -19,13 +19,13 @@
                 to="/register"
                 class="flex items-center justify-center rounded-full border border-transparent bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-700 md:py-4 md:px-10 md:text-lg shadow-lg hover:shadow-xl transition-all"
               >
-                Inizia Gratis
+                Start for Free
               </NuxtLink>
               <NuxtLink
                 to="/login"
                 class="flex items-center justify-center rounded-full border border-gray-300 bg-white px-8 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 md:py-4 md:px-10 md:text-lg"
               >
-                Accedi
+                Login
               </NuxtLink>
             </div>
             <div v-else>
@@ -33,7 +33,7 @@
                 to="/dashboard"
                 class="flex items-center justify-center rounded-full border border-transparent bg-blue-600 px-8 py-3 text-base font-medium text-white hover:bg-blue-700 md:py-4 md:px-10 md:text-lg shadow-lg"
               >
-                Vai alla Dashboard
+                Go to Dashboard
               </NuxtLink>
             </div>
           </div>
@@ -51,20 +51,20 @@
       <div class="relative max-w-xl mx-auto px-4 sm:px-6 lg:px-8 lg:max-w-7xl">
         <div class="relative">
           <h2 class="text-center text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Perché scegliere ContactShare?
+            Why choose ContactShare?
           </h2>
           <p class="mt-4 max-w-3xl mx-auto text-center text-xl text-gray-500">
-            Tutto ciò di cui hai bisogno per gestire i tuoi contatti in modo professionale ed efficiente.
+            Everything you need to manage your contacts professionally and efficiently.
           </p>
         </div>
 
         <div class="relative mt-12 lg:mt-24 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-center">
           <div class="relative">
             <h3 class="text-2xl font-extrabold text-gray-900 tracking-tight sm:text-3xl">
-              Digitale & Sostenibile
+              Digital & Sustainable
             </h3>
             <p class="mt-3 text-lg text-gray-500">
-              Dimentica i biglietti da visita cartacei che finiscono nel cestino. La tua card digitale è sempre con te, sul tuo smartphone, pronta per essere condivisa. Riduci gli sprechi e fai una scelta ecologica.
+              Forget paper business cards that end up in the trash. Your digital card is always with you, on your smartphone, ready to be shared. Reduce waste and make an eco-friendly choice.
             </p>
 
             <dl class="mt-10 space-y-10">
@@ -75,10 +75,10 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
                   </div>
-                  <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Condivisione Immediata</p>
+                  <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Instant Sharing</p>
                 </dt>
                 <dd class="mt-2 ml-16 text-base text-gray-500">
-                  Condividi via QR Code, Link diretto, Email o WhatsApp. Chi riceve non deve installare nulla.
+                  Share via QR Code, Direct Link, Email, or WhatsApp. Recipients don't need to install anything.
                 </dd>
               </div>
 
@@ -89,10 +89,10 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                   </div>
-                  <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Analitiche Integrate</p>
+                  <p class="ml-16 text-lg leading-6 font-medium text-gray-900">Integrated Analytics</p>
                 </dt>
                 <dd class="mt-2 ml-16 text-base text-gray-500">
-                  Scopri quante persone visitano la tua card e scaricano i tuoi contatti. Ottimizza la tua presenza.
+                  Discover how many people visit your card and download your contacts. Optimize your presence.
                 </dd>
               </div>
             </dl>
@@ -136,24 +136,24 @@
     <section class="py-16 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-extrabold text-gray-900">Come funziona</h2>
-          <p class="mt-4 text-lg text-gray-500">Inizia in tre semplici passaggi.</p>
+          <h2 class="text-3xl font-extrabold text-gray-900">How it works</h2>
+          <p class="mt-4 text-lg text-gray-500">Get started in three simple steps.</p>
         </div>
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div class="text-center">
             <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mx-auto mb-4 text-2xl font-bold">1</div>
-            <h3 class="text-xl font-medium text-gray-900">Crea Account</h3>
-            <p class="mt-2 text-gray-500">Registrati gratuitamente in pochi secondi.</p>
+            <h3 class="text-xl font-medium text-gray-900">Create Account</h3>
+            <p class="mt-2 text-gray-500">Sign up for free in seconds.</p>
           </div>
           <div class="text-center">
             <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mx-auto mb-4 text-2xl font-bold">2</div>
-            <h3 class="text-xl font-medium text-gray-900">Personalizza</h3>
-            <p class="mt-2 text-gray-500">Aggiungi foto, dettagli e link social.</p>
+            <h3 class="text-xl font-medium text-gray-900">Customize</h3>
+            <p class="mt-2 text-gray-500">Add photos, details, and social links.</p>
           </div>
           <div class="text-center">
             <div class="flex items-center justify-center h-16 w-16 rounded-full bg-blue-100 text-blue-600 mx-auto mb-4 text-2xl font-bold">3</div>
-            <h3 class="text-xl font-medium text-gray-900">Condividi</h3>
-            <p class="mt-2 text-gray-500">Mostra il tuo QR o invia il link a chi vuoi.</p>
+            <h3 class="text-xl font-medium text-gray-900">Share</h3>
+            <p class="mt-2 text-gray-500">Show your QR or send the link to anyone.</p>
           </div>
         </div>
       </div>
@@ -163,8 +163,8 @@
     <section class="bg-blue-700">
       <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
         <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-          <span class="block">Pronto a migliorare il tuo networking?</span>
-          <span class="block text-blue-200">Crea la tua prima card oggi stesso.</span>
+          <span class="block">Ready to upgrade your networking?</span>
+          <span class="block text-blue-200">Create your first card today.</span>
         </h2>
         <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
           <div class="inline-flex rounded-md shadow">
@@ -172,7 +172,7 @@
               to="/register"
               class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50"
             >
-              Inizia Gratis
+              Start for Free
             </NuxtLink>
           </div>
         </div>

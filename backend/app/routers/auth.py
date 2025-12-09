@@ -9,6 +9,7 @@ from ..db import get_db
 from ..models import UserIn, LoginIn, TokenPair, MagicRequestIn, MagicConfirmIn
 from ..security import hash_password, verify_password, create_access_token, create_refresh_token, decode_refresh
 from ..utils import now_utc
+from ..deps import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -88,3 +89,17 @@ async def magic_confirm(data: MagicConfirmIn):
     await db.magic_tokens.delete_one({"_id": t["_id"]})
     rid = secrets.token_hex(8)
     return TokenPair(access_token=create_access_token(uid), refresh_token=create_refresh_token(uid, rid))
+
+@router.delete("/me")
+async def delete_account(user=Depends(get_current_user)):
+    db = get_db()
+    uid = user["id"]
+    oid = ObjectId(uid)
+    
+    # Delete all cards
+    await db.cards.delete_many({"user_id": oid})
+    
+    # Delete user
+    await db.users.delete_one({"_id": oid})
+    
+    return {"ok": True}

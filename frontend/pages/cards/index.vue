@@ -2,13 +2,13 @@
   <section class="flex justify-center pt-6">
     <div class="w-full max-w-4xl">
       <div class="flex justify-between items-center mb-4">
-        <h1 class="text-2xl font-bold">Le tue card</h1>
+        <h1 class="text-2xl font-bold">Your cards</h1>
         <NuxtLink
           to="/cards/new"
           type="button"
           class="text-body bg-neutral-primary-soft border border-default hover:bg-neutral-secondary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary-soft shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none"
         >
-          + Nuova Card
+          + New Card
         </NuxtLink>
       </div>
 
@@ -50,17 +50,17 @@
               <!-- Mini stats -->
               <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-body">
                 <span v-if="c._stats">
-                  👁 {{ c._stats.views_7d }} visite 7g
+                  👁 {{ c._stats.views_7d }} views 7d
                 </span>
                 <span v-if="c._stats">
                   📇 {{ c._stats.total_vcard }} vCard
                 </span>
                 <span v-if="c._stats && socialTotal(c._stats.social_clicks) > 0">
-                  🔗 {{ socialTotal(c._stats.social_clicks) }} click social
+                  🔗 {{ socialTotal(c._stats.social_clicks) }} social clicks
                 </span>
 
                 <span v-if="c._stats === null" class="text-[11px] text-gray-400">
-                  Carico statistiche…
+                  Loading stats…
                 </span>
               </div>
             </div>
@@ -72,11 +72,11 @@
             <NuxtLink
               :to="`/cards/${c.id}`"
               type="button"
-              title="Modifica"
+              title="Edit"
               class="flex-1 md:flex-none justify-center items-center text-white bg-success box-border border border-transparent hover:bg-success-strong focus:ring-4 focus:ring-success-medium shadow-xs font-medium leading-5 rounded-full text-sm p-2 md:px-4 md:py-2.5 focus:outline-none flex gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-              <span class="hidden md:inline">Modifica</span>
+              <span class="hidden md:inline">Edit</span>
             </NuxtLink>
 
             <!-- Apri pubblico -->
@@ -84,41 +84,41 @@
               type="button"
               :href="`/c/${c.slug}`"
               target="_blank"
-              title="Apri pubblico"
+              title="Open public"
               class="flex-1 md:flex-none justify-center items-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm p-2 md:px-4 md:py-2.5 focus:outline-none flex gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-              <span class="hidden md:inline">Apri pubblico</span>
+              <span class="hidden md:inline">Open public</span>
             </a>
 
             <!-- Elimina -->
             <button
               @click="confirmDelete(c)"
-              title="Elimina"
+              title="Delete"
               class="flex-1 md:flex-none justify-center items-center text-white bg-danger box-border border border-transparent hover:bg-danger-strong focus:ring-4 focus:ring-danger-medium shadow-xs font-medium leading-5 rounded-full text-sm p-2 md:px-4 md:py-2.5 focus:outline-none flex gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-              <span class="hidden md:inline">Elimina</span>
+              <span class="hidden md:inline">Delete</span>
             </button>
 
             <!-- Statistiche -->
             <NuxtLink
               :to="`/analytics/${c.id}`"
               type="button"
-              title="Statistiche"
+              title="Analytics"
               class="flex-1 md:flex-none justify-center items-center text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-full text-sm p-2 md:px-4 md:py-2.5 focus:outline-none flex gap-2"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
-              <span class="hidden md:inline">Statistiche</span>
+              <span class="hidden md:inline">Analytics</span>
             </NuxtLink>
           </div>
         </li>
       </ul>
 
-      <p v-else class="text-gray-500">Non hai ancora creato nessuna card.</p>
+      <p v-else class="text-gray-500">You haven't created any cards yet.</p>
 
       <div v-if="loading" class="mt-4 text-sm text-gray-500">
-        Caricamento…
+        Loading…
       </div>
     </div>
   </section>
@@ -178,19 +178,19 @@ const loadCards = async () => {
 }
 
 const confirmDelete = async (c) => {
-  if (!confirm(`Eliminare “${c.title}”?`)) return
+  if (!confirm(`Delete “${c.title}”?`)) return
 
   try {
     await $api(`/cards/${c.id}`, { method: 'DELETE' })
     cards.value = cards.value.filter((x) => x.id !== c.id)
 
     /* 🟢 TOAST SUCCESSO ELIMINAZIONE */
-    success('Card eliminata con successo.')
+    success('Card deleted successfully.')
   } catch (e) {
     console.error(e)
 
     /* 🔴 TOAST ERRORE ELIMINAZIONE */
-    toastError('Errore durante l’eliminazione della card.')
+    toastError('Error deleting card.')
   }
 }
 
