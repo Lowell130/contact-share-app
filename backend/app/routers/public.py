@@ -5,7 +5,11 @@ from ..db import get_db
 from ..utils import now_utc
 from ..services.vcard import to_vcard
 
-import httpx  # 👈 nuovo import
+from ..services.vcard import to_vcard
+from ..services.qrcode_gen import qrcode_png
+from ..limiter import limiter
+
+import httpx
 
 router = APIRouter(prefix="/public", tags=["public"])
 
@@ -58,6 +62,7 @@ async def detect_country(request: Request) -> str:
 
 
 @router.get("/cards/{slug}")
+@limiter.limit("10/minute")
 async def public_card(slug: str, request: Request):
     db = get_db()
     c = await db.cards.find_one({"slug": slug})
@@ -79,6 +84,7 @@ async def public_card(slug: str, request: Request):
 
     return {
         "id": c["id"],
+        "user_id": c["user_id"],
         "slug": c["slug"],
         "title": c.get("title"),
         "notes": c.get("notes", ""),
@@ -111,6 +117,38 @@ async def public_vcard(slug: str, request: Request):
     headers = {"Content-Disposition": f'attachment; filename="{c["slug"]}.vcf"'}
 
     return Response(content=vcf, media_type="text/vcard", headers=headers)
+
+
+@router.get("/cards/{slug}/qrcode")
+@limiter.limit("20/minute")
+async def public_qrcode(slug: str, request: Request):
+    db = get_db()
+    c = await db.cards.find_one({"slug": slug})
+    if not c or not c.get("is_public", True):
+        raise HTTPException(404)
+
+    # Genera QR code
+    # URL pubblico della card (assumiamo che il frontend sia su /c/{slug})
+    # Se vuoi l'URL assoluto, potresti doverlo costruire o prenderlo da settings
+    # Per ora usiamo un path relativo o costruiamo basandoci su request.base_url se necessario
+    # Ma il QR code deve contenere l'URL completo.
+    # Usiamo l'header Origin o Referer se disponibile, altrimenti un default.
+    
+    base_url = str(request.base_url).rstrip("/")
+    # Se siamo dietro proxy, request.base_url potrebbe essere http interno.
+    # Meglio usare una variabile d'ambiente FRONTEND_URL se esiste, o fallback.
+    # Per semplicità qui costruiamo l'URL relativo se il client lo gestisce, ma il QR deve essere scansionabile.
+    # Assumiamo che chi scansiona sia "fuori".
+    # TODO: Mettere FRONTEND_URL in settings. Per ora usiamo un hardcoded o derivato.
+    
+    # Fallback smart:
+    host = request.headers.get("host", "localhost:3000")
+    scheme = request.headers.get("x-forwarded-proto", "http")
+    public_url = f"{scheme}://{host}/c/{slug}"
+    
+    png = qrcode_png(public_url)
+    headers = {"Content-Disposition": f'inline; filename="{c["slug"]}.png"'}
+    return Response(content=png, media_type="image/png", headers=headers)
 
 
 @router.post("/events/social-click")

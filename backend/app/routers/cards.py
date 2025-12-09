@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, UploadFile, File
+from pathlib import Path
 from bson import ObjectId, errors as bson_errors
 from ..deps import get_current_user
 from ..db import get_db
 from ..models import CardIn, CardOut
-from ..utils import now_utc, slugify, rand_slug
+from ..utils import now_utc, slugify, rand_slug, save_upload_file
 from ..services.vcard import to_vcard
 from ..services.qrcode_gen import qrcode_png
 
@@ -46,6 +47,12 @@ async def create_card(data: CardIn, user=Depends(get_current_user)):
         "created_at": now_utc(),
         "updated_at": now_utc(),
     })
+    
+    # Fallback avatar se non fornito
+    if not doc.get("avatar_url"):
+        # Usa DiceBear con lo slug come seed
+        doc["avatar_url"] = f"https://api.dicebear.com/7.x/avataaars/svg?seed={slug}"
+
     res = await db.cards.insert_one(doc)
     doc["id"] = str(res.inserted_id)
     return CardOut(**doc)
@@ -74,6 +81,73 @@ async def update_card(id: str, data: CardIn, user=Depends(get_current_user)):
         updates["slug"] = new_slug
     updates["updated_at"] = now_utc()
     await db.cards.update_one({"_id": oid}, {"$set": updates})
+    c = await db.cards.find_one({"_id": oid}, card_projection())
+    c["id"] = str(c["_id"]); c["user_id"] = str(c["user_id"])
+    return c
+
+@router.post("/{id}/avatar", response_model=CardOut)
+async def upload_avatar(id: str, file: UploadFile = File(...), user=Depends(get_current_user)):
+    db = get_db()
+    oid = to_object_id_or_404(id)
+    c = await db.cards.find_one({"_id": oid, "user_id": user["id"]})
+    if not c: raise HTTPException(404, detail="Card not found")
+
+    # Validazione estensione
+    ext = Path(file.filename).suffix.lower()
+    if ext not in [".jpg", ".jpeg", ".png", ".webp"]:
+        raise HTTPException(400, detail="Invalid image format")
+
+    # Salva file
+    filename = f"{oid}{ext}"
+    upload_dir = Path("static/uploads")
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    dest = upload_dir / filename
+    
+    save_upload_file(file, dest)
+
+    # Aggiorna URL (assumiamo che il backend sia servito su / o che static sia accessibile)
+    # TODO: In prod meglio usare URL assoluto da env var
+    avatar_url = f"/static/uploads/{filename}"
+    
+    await db.cards.update_one(
+        {"_id": oid},
+        {"$set": {"avatar_url": avatar_url, "updated_at": now_utc()}}
+    )
+    
+    c = await db.cards.find_one({"_id": oid}, card_projection())
+    c["id"] = str(c["_id"]); c["user_id"] = str(c["user_id"])
+    return c
+
+@router.delete("/{id}/avatar", response_model=CardOut)
+async def delete_avatar(id: str, user=Depends(get_current_user)):
+    db = get_db()
+    oid = to_object_id_or_404(id)
+    c = await db.cards.find_one({"_id": oid, "user_id": user["id"]})
+    if not c: raise HTTPException(404, detail="Card not found")
+
+    # Se c'è un avatar custom (locale), potremmo cancellare il file
+    # Ma per ora basta resettare l'URL
+    # Se l'URL inizia con /static/uploads/, potremmo cancellarlo dal disco
+    old_url = c.get("avatar_url", "")
+    if old_url and old_url.startswith("/static/uploads/"):
+        try:
+            # Rimuovi file fisico
+            filename = old_url.split("/")[-1]
+            path = Path("static/uploads") / filename
+            if path.exists():
+                path.unlink()
+        except Exception:
+            pass # Ignora errori di cancellazione file
+
+    # Reset a DiceBear
+    slug = c.get("slug") or rand_slug()
+    new_avatar = f"https://api.dicebear.com/7.x/avataaars/svg?seed={slug}"
+    
+    await db.cards.update_one(
+        {"_id": oid},
+        {"$set": {"avatar_url": new_avatar, "updated_at": now_utc()}}
+    )
+    
     c = await db.cards.find_one({"_id": oid}, card_projection())
     c["id"] = str(c["_id"]); c["user_id"] = str(c["user_id"])
     return c

@@ -7,6 +7,7 @@
     :qrUrl="qrUrl"
     :visibleFields="visibleFields"
     :themeName="card.theme"
+    :isOwner="isOwner"
   />
 </template>
 
@@ -16,7 +17,8 @@ import PublicCardModern from './PublicCardModern.vue'
 
 const props = defineProps({
   card: { type: Object, required: true },
-  publicUrl: { type: String, required: true }
+  publicUrl: { type: String, required: true },
+  isOwner: { type: Boolean, default: false }
 })
 const config = useRuntimeConfig()
 
@@ -29,7 +31,7 @@ const vcardUrl = computed(() =>
   `${config.public.apiBase}/public/cards/${encodeURIComponent(props.card?.slug || '')}/vcard`
 )
 const qrUrl = computed(() =>
-  `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(props.publicUrl)}`
+  `${config.public.apiBase}/public/cards/${encodeURIComponent(props.card?.slug || '')}/qrcode`
 )
 
 // Now we only use Modern for everything.

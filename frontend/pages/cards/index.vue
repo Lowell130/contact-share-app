@@ -26,7 +26,7 @@
             >
               <img
                 v-if="c.avatar_url"
-                :src="c.avatar_url"
+                :src="resolveAvatar(c.avatar_url)"
                 :alt="c.title"
                 class="absolute inset-0 w-full h-full object-cover"
               />
@@ -128,8 +128,15 @@
 import { ref, onMounted } from 'vue'
 
 const { $api } = useApi()
+const config = useRuntimeConfig()
 const cards = ref([])
 const loading = ref(false)
+
+const resolveAvatar = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `${config.public.apiBase}${url}`
+}
 
 /* 🟦 IMPORT TOASTS */
 const { success, error: toastError } = useToast()

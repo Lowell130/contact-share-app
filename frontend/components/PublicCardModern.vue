@@ -11,7 +11,20 @@
         >
       
     <!-- HEADER / AVATAR / TITOLO + INFO -->
-    <div class="pb-4 md:pb-4">
+    <div class="pb-4 md:pb-4 relative">
+      <!-- Edit Button for Owner -->
+      <div v-if="isOwner" class="absolute top-0 right-0 z-10">
+        <NuxtLink 
+          :to="`/cards/${card.id}`"
+          class="flex items-center gap-1 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded-full shadow-sm hover:bg-gray-700 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+          </svg>
+          Modifica
+        </NuxtLink>
+      </div>
+
       <div class="flex flex-col md:flex-row md:items-center md:gap-6">
         <!-- Avatar -->
         <div class="flex justify-center md:justify-start">
@@ -23,16 +36,15 @@
           >
             <img
               v-if="card.avatar_url"
-              :src="card.avatar_url"
+              :src="resolveAvatar(card.avatar_url)"
               :alt="card.title"
               class="absolute inset-0 w-full h-full object-cover"
             />
-            <img
-              v-else
-              src="/assets/images/profile-picture-3.jpg"
-              alt="Profile"
-              class="absolute inset-0 w-full h-full object-cover"
-            />
+            <div v-else class="absolute inset-0 w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -94,7 +106,7 @@
                 </svg>
               </span>
               <a
-                :href="`tel:${primary.phone.replace(/\\s+/g, '')}`"
+                :href="`tel:${primary.phone.replace(/\s+/g, '')}`"
                 class="underline decoration-gray-300 transition-colors"
                 :class="colors.linkHover"
               >
@@ -242,8 +254,22 @@ const props = defineProps({
   qrUrl: { type: String, required: true },
   visibleFields: { type: Array, required: true },
   // e.g. "modern_emerald", "modern_blue", "modern_indigo", ...
-  themeName: { type: String, default: "modern_emerald" }, 
+  themeName: { type: String, default: "modern_emerald" },
+  isOwner: { type: Boolean, default: false }
 });
+
+const config = useRuntimeConfig()
+
+const resolveAvatar = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  const resolved = `${config.public.apiBase}${url}`
+  console.log('PublicCardModern resolveAvatar:', { original: url, resolved, apiBase: config.public.apiBase })
+  return resolved
+}
+
+// Debug log
+console.log('PublicCardModern props:', props.card)
 
 /* --------------------------------
  *  COLOR THEMES CONFIG

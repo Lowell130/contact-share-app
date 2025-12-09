@@ -3,7 +3,7 @@
     <div class="w-full max-w-4xl">
 
       <h1 class="text-2xl font-bold mb-4 text-center">Modifica Card</h1>
-      <CardForm v-model="form" @submit="save" />
+      <CardForm v-model="form" :cardId="card.id" @submit="save" />
 
       <div class="mt-6 flex flex-wrap gap-3">
         <button @click="downloadVcard" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-sm px-4 py-2.5 focus:outline-none">Scarica vCard (privata)</button>

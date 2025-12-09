@@ -1,10 +1,16 @@
 from fastapi import FastAPI, Response
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .db import ensure_indexes
 from .routers import auth, me, cards, public, share, analytics
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from .limiter import limiter
 
 app = FastAPI(title="Contact Share API", version="0.1.0")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +26,8 @@ app.add_middleware(
 @app.options("/{full_path:path}")
 def preflight_handler(full_path: str):
     return Response(status_code=204)
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(auth.router)
 app.include_router(me.router)

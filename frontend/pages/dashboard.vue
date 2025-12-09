@@ -64,7 +64,7 @@
             <div class="w-16 h-16 rounded-full bg-gray-100 overflow-hidden flex-shrink-0 border border-gray-200">
               <img 
                 v-if="topCard.avatar_url" 
-                :src="topCard.avatar_url" 
+                :src="resolveAvatar(topCard.avatar_url)" 
                 :alt="topCard.title"
                 class="w-full h-full object-cover"
               />
@@ -117,8 +117,15 @@
 import { ref, onMounted, computed } from 'vue'
 
 const { $api } = useApi()
+const config = useRuntimeConfig()
 const loading = ref(true)
 const cards = ref([])
+
+const resolveAvatar = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `${config.public.apiBase}${url}`
+}
 
 const totalStats = computed(() => {
   return cards.value.reduce((acc, card) => {

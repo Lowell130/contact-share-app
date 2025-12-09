@@ -1,6 +1,53 @@
 <!-- frontend/components/CardForm.vue  -->
 <template>
   <form @submit.prevent="onSubmit" class="space-y-6 max-w-6xl">
+    <!-- Avatar Upload Section -->
+    <div class="flex items-center gap-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+      <div class="relative w-24 h-24 rounded-full bg-gray-100 overflow-hidden border border-gray-200 group flex-shrink-0">
+        <img
+          v-if="form.avatar_url"
+          :src="resolveAvatar(form.avatar_url)"
+          class="w-full h-full object-cover"
+        />
+        <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </div>
+        
+        <!-- Overlay for upload -->
+        <label v-if="cardId" class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity text-white text-xs font-medium">
+          Cambia
+          <input type="file" class="hidden" accept="image/*" @change="onFileSelect" />
+        </label>
+      </div>
+      
+      <div class="flex-1">
+        <h3 class="text-lg font-medium text-gray-900">Avatar</h3>
+        <p v-if="!cardId" class="text-sm text-gray-500 mt-1">
+          Salva la card per poter caricare un'immagine personalizzata.
+          <br>Verrà generato un avatar automatico se non ne carichi uno.
+        </p>
+        <div v-else class="mt-1">
+          <p class="text-sm text-gray-500">
+            Clicca sull'immagine per caricarne una nuova.
+            <br>Formati supportati: JPG, PNG, WEBP.
+          </p>
+          <button 
+            v-if="hasCustomAvatar"
+            type="button"
+            @click="deleteAvatar"
+            class="mt-2 text-xs text-red-600 hover:text-red-800 font-medium flex items-center gap-1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Rimuovi avatar personalizzato
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block mb-2.5 text-sm font-medium text-heading">Titolo/Nome</label>
@@ -353,7 +400,8 @@ const defaultField = (type = 'email') => {
 }
 
 const props = defineProps({
-  modelValue: { type: Object, default: () => ({}) }
+  modelValue: { type: Object, default: () => ({}) },
+  cardId: { type: String, default: null }
 })
 const emit = defineEmits(['update:modelValue', 'submit'])
 
@@ -362,6 +410,7 @@ const form = reactive({
   slug: props.modelValue.slug || '',
   bio: props.modelValue.bio || props.modelValue.notes || '',
   theme: props.modelValue.theme || 'minimal',
+  avatar_url: props.modelValue.avatar_url || '',
   fields: Array.isArray(props.modelValue.fields)
     ? JSON.parse(JSON.stringify(props.modelValue.fields))
     : [],
@@ -453,6 +502,55 @@ const { $toast } = useNuxtApp() // or useToast if auto-imported, checking import
 // So `const toast = useToast()` should work.
 
 const toast = useToast()
+const { $api } = useApi()
+const config = useRuntimeConfig()
+
+const resolveAvatar = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return `${config.public.apiBase}${url}`
+}
+
+const hasCustomAvatar = computed(() => {
+  const url = form.avatar_url || ''
+  // Se non inizia con http (quindi è relativo /static/...) è custom
+  // Oppure se è un URL assoluto ma non è dicebear
+  return url && !url.includes('dicebear.com')
+})
+
+const onFileSelect = async (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+  
+  const fd = new FormData()
+  fd.append('file', file)
+  
+  try {
+    const res = await $api(`/cards/${props.cardId}/avatar`, {
+      method: 'POST',
+      body: fd
+    })
+    // Update form avatar
+    form.avatar_url = res.avatar_url
+    toast.success('Avatar aggiornato!')
+  } catch (e) {
+    // Error handled by useApi usually
+  }
+}
+
+const deleteAvatar = async () => {
+  if (!confirm('Vuoi rimuovere l\'avatar personalizzato?')) return
+  
+  try {
+    const res = await $api(`/cards/${props.cardId}/avatar`, {
+      method: 'DELETE'
+    })
+    form.avatar_url = res.avatar_url
+    toast.success('Avatar rimosso.')
+  } catch (e) {
+    // Error handled by useApi
+  }
+}
 
 const onSubmit = () => {
   // Validation: check for empty fields
@@ -467,6 +565,7 @@ const onSubmit = () => {
     slug: (form.slug || '').trim(),
     notes: (form.bio || '').trim(),
     theme: (form.theme || 'minimal'),
+    avatar_url: form.avatar_url,
     is_public: !!form.is_public,
     is_indexed: !!form.is_indexed,
     allow_vcard: !!form.allow_vcard,

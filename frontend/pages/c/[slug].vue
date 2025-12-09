@@ -9,7 +9,7 @@
       Caricamento…
     </div>
     <div v-else>
-      <PublicCard :card="card" :publicUrl="publicUrl" />
+      <PublicCard :card="card" :publicUrl="publicUrl" :isOwner="isOwner" />
     </div>
   </section>
 </template>
@@ -20,6 +20,12 @@ import PublicCard from '~/components/PublicCard.vue'
 const route = useRoute()
 const config = useRuntimeConfig()
 const reqUrl = useRequestURL()
+const { user } = useAuth()
+
+const isOwner = computed(() => {
+  if (!user.value || !card.value) return false
+  return user.value.id === card.value.user_id
+})
 
 const publicUrl = computed(() => `${reqUrl.protocol}//${reqUrl.host}/c/${route.params.slug}`)
 
