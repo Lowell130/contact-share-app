@@ -254,12 +254,31 @@
           class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body"
         >
           <option disabled value="">Choose a theme...</option>
-          <option value="modern_emerald">Modern Emerald</option>
-          <option value="modern_blue">Modern Blue</option>
-          <option value="modern_indigo">Modern Indigo</option>
-          <option value="modern_rose">Modern Rose</option>
-          <option value="modern_orange">Modern Orange</option>
+          <option value="minimal">Minimal (Free)</option>
+          <option value="gradient">Gradient (Free)</option>
+          <option value="dark">Dark (Free)</option>
+          <option value="flowbite">Flowbite (Free)</option>
+          <optgroup label="Modern (Pro Only)">
+            <option value="modern_emerald" :disabled="!isPro">Modern Emerald {{ !isPro ? '🔒' : '' }}</option>
+            <option value="modern_blue" :disabled="!isPro">Modern Blue {{ !isPro ? '🔒' : '' }}</option>
+            <option value="modern_indigo" :disabled="!isPro">Modern Indigo {{ !isPro ? '🔒' : '' }}</option>
+            <option value="modern_rose" :disabled="!isPro">Modern Rose {{ !isPro ? '🔒' : '' }}</option>
+            <option value="modern_orange" :disabled="!isPro">Modern Orange {{ !isPro ? '🔒' : '' }}</option>
+          </optgroup>
         </select>
+        <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-center justify-between">
+        <div>
+           <p class="text-sm text-blue-800 font-medium">Upgrade to Pro</p>
+           <p class="text-xs text-blue-600">Unlock all premium themes and more.</p>
+        </div>
+        <button 
+          type="button"
+          @click="upgradeToPro"
+          class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-full transition-colors"
+        >
+          Try Pro
+        </button>
+      </div>
       </div>
     </div>
 
@@ -269,6 +288,9 @@
 
 <script setup>
 import { reactive, ref, watch, computed } from 'vue'
+
+const { user } = useAuth()
+const isPro = computed(() => user.value?.plan === 'pro' || user.value?.plan === 'admin')
 
 /* --------------------------------
  * CONFIG UNICA PER I CAMPI
@@ -581,5 +603,21 @@ const onSubmit = () => {
   }
 
   emit('submit', cleaned)
+}
+
+const upgradeToPro = async () => {
+  try {
+    const res = await $api('/payment/checkout', { method: 'POST' })
+    if (res.url) {
+      window.location.href = res.url
+    }
+  } catch (e) {
+    console.error(e)
+    if (e.message.includes('Stripe not configured')) {
+        toast.error("Stripe keys missing in Admin Settings")
+    } else {
+        toast.error("Error starting checkout")
+    }
+  }
 }
 </script>

@@ -159,6 +159,114 @@
       </div>
     </section>
 
+    <!-- Pricing Section -->
+    <section class="py-16 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-extrabold text-gray-900">Simple, transparent pricing</h2>
+          <p class="mt-4 text-lg text-gray-500">Choose the plan that fits your needs.</p>
+        </div>
+        
+        <div class="space-y-12 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-8 max-w-4xl mx-auto">
+          <!-- Free Tier -->
+          <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 flex flex-col hover:shadow-lg transition-shadow">
+            <div class="mb-4">
+              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
+                Starter
+              </span>
+            </div>
+            <h3 class="text-4xl font-extrabold text-gray-900">Free</h3>
+            <p class="mt-4 text-gray-500">Everything you need to get started.</p>
+            <ul class="mt-6 space-y-4 flex-1">
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-500">1 Digital Card</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-500">Basic Themes</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-500">Unlimited Sharing</span>
+              </li>
+            </ul>
+             <NuxtLink v-if="!isLoggedIn" to="/register" class="mt-8 block w-full bg-gray-50 border border-gray-200 rounded-md py-3 text-sm font-semibold text-gray-900 text-center hover:bg-gray-100">
+               Get Started
+             </NuxtLink>
+             <button v-else disabled class="mt-8 block w-full bg-gray-50 border border-gray-200 rounded-md py-3 text-sm font-semibold text-gray-400 text-center cursor-not-allowed">
+               Current Plan
+             </button>
+          </div>
+
+          <!-- Pro Tier -->
+          <div class="bg-white rounded-2xl shadow-xl border-2 border-blue-600 p-8 flex flex-col relative overflow-hidden">
+             <div class="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                 Recommended
+             </div>
+            <div class="mb-4">
+              <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                Pro
+              </span>
+            </div>
+            <h3 class="text-4xl font-extrabold text-gray-900">
+                €4.99<span class="text-xl font-medium text-gray-500">/mo</span>
+            </h3>
+            <p class="mt-4 text-gray-500">Unlock your full potential.</p>
+            <ul class="mt-6 space-y-4 flex-1">
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-900 font-medium">Everything in Free</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-500">Premium "Modern" Themes</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-500">Advanced Analytics (Coming Soon)</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 h-6 w-6 text-green-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="ml-3 text-gray-500">Verified Badge (Coming Soon)</span>
+              </li>
+            </ul>
+             <NuxtLink v-if="!isLoggedIn" to="/register?plan=pro" class="mt-8 block w-full bg-blue-600 border border-transparent rounded-md py-3 text-sm font-semibold text-white text-center hover:bg-blue-700 shadow-md">
+               Upgrade to Pro
+             </NuxtLink>
+             <NuxtLink v-else to="/cards" class="mt-8 block w-full bg-blue-600 border border-transparent rounded-md py-3 text-sm font-semibold text-white text-center hover:bg-blue-700 shadow-md">
+               Upgrade Inside
+             </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-16 bg-white">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-extrabold text-gray-900 text-center mb-8">Frequently Asked Questions</h2>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Is ContactShare really free?</h3>
+                    <p class="mt-2 text-gray-500">Yes! The Free plan allows you to create a complete digital business card with unlimited sharing. You only pay if you want premium themes or advanced features.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">How do I share my card?</h3>
+                    <p class="mt-2 text-gray-500">You can share your card via a unique link (e.g., contactshare.com/c/yourname) or by letting others scan your personal QR code, available in your dashboard.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Can I cancel my Pro subscription?</h3>
+                    <p class="mt-2 text-gray-500">Absolutely. You can cancel at any time from your account settings. You'll keep your Pro features until the end of the billing cycle.</p>
+                </div>
+                 <div>
+                    <h3 class="text-lg font-medium text-gray-900">Do you offer custom domains?</h3>
+                    <p class="mt-2 text-gray-500">We are working on it! Custom domains (e.g., yourname.com) will be available soon as an add-on or part of a higher tier.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CTA Footer -->
     <section class="bg-blue-700">
       <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">

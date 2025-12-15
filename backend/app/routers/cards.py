@@ -10,6 +10,10 @@ from ..services.qrcode_gen import qrcode_png
 
 router = APIRouter(prefix="/cards", tags=["cards"])
 
+PREMIUM_THEMES = {
+    "modern_emerald", "modern_blue", "modern_indigo", "modern_rose", "modern_orange"
+}
+
 def card_projection():
     return {
         "_id": 1, "user_id": 1, "title": 1, "slug": 1, "fields": 1, "theme": 1,
@@ -40,6 +44,15 @@ async def create_card(data: CardIn, user=Depends(get_current_user)):
     slug = slugify(data.slug or data.title) or rand_slug()
     if await db.cards.find_one({"slug": slug}):
         slug = f"{slug}-{rand_slug(3)}"
+    if data.theme in PREMIUM_THEMES and user.get("plan") != "pro":
+        raise HTTPException(status_code=403, detail="This theme is reserved for Pro plan users.")
+    
+    # Check Limit
+    if user.get("plan") == "free":
+        count = await db.cards.count_documents({"user_id": user["id"]})
+        if count >= 1:
+            raise HTTPException(status_code=403, detail="Free plan limit reached (1 card). Upgrade to Pro.")
+
     doc = data.model_dump()
     doc.update({
         "user_id": user["id"],
@@ -73,6 +86,11 @@ async def update_card(id: str, data: CardIn, user=Depends(get_current_user)):
     c = await db.cards.find_one({"_id": oid, "user_id": user["id"]})
     if not c: raise HTTPException(404, detail="Card not found")
     updates = data.model_dump()
+    
+    # Check Premium Theme
+    if updates.get("theme") and updates["theme"] in PREMIUM_THEMES and user.get("plan") != "pro":
+        raise HTTPException(status_code=403, detail="This theme is reserved for Pro plan users.")
+
     # gestione slug se passato
     if updates.get("slug"):
         new_slug = slugify(updates["slug"])

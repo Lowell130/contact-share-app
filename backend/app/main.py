@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .db import ensure_indexes
-from .routers import auth, me, cards, public, share, analytics
+from .routers import auth, me, cards, public, share, analytics, admin, payment
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from .limiter import limiter
@@ -35,6 +35,8 @@ app.include_router(cards.router)    # /cards/{id} (privato)
 app.include_router(public.router)   # /public/cards/{slug} (pubblico)
 app.include_router(share.router)
 app.include_router(analytics.router)
+app.include_router(admin.router)
+app.include_router(payment.router)
 
 @app.on_event("startup")
 async def startup():

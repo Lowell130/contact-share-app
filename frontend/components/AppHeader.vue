@@ -10,6 +10,10 @@
           <NuxtLink to="/dashboard" class="hover:underline">Dashboard</NuxtLink>
           <NuxtLink to="/cards" class="hover:underline">Cards</NuxtLink>
           <NuxtLink to="/account" class="hover:underline">Account</NuxtLink>
+          <NuxtLink v-if="user?.plan === 'free'" to="/upgrade" class="text-blue-600 font-bold hover:underline flex items-center gap-1">
+             💎 Upgrade
+          </NuxtLink>
+          <NuxtLink v-if="user?.plan === 'admin'" to="/admin/dashboard" class="text-red-600 font-bold hover:underline">Admin Panel</NuxtLink>
           <button
             @click="onLogout"
             class="text-white bg-dark box-border border border-transparent hover:bg-dark-strong focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-full text-xs px-4 py-1.5 focus:outline-none ml-3"
@@ -39,7 +43,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const { isLoggedIn, logout } = useAuth()
+const { isLoggedIn, user, logout } = useAuth()
 
 const onLogout = async () => {
   await logout()

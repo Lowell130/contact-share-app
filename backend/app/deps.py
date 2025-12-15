@@ -21,3 +21,8 @@ async def get_current_user(creds: HTTPAuthorizationCredentials = Depends(bearer)
         raise HTTPException(status_code=401, detail="User not found")
     user["id"] = str(user["_id"])
     return user
+
+async def get_current_admin(user = Depends(get_current_user)):
+    if user.get("plan") != "admin":
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return user
