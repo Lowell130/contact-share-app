@@ -18,6 +18,8 @@ class Settings(BaseSettings):
 
     # App
     BASE_URL: Optional[AnyHttpUrl] = None
+    # URL pubblico del frontend per redirect post-pagamento
+    FRONTEND_URL: str = "http://localhost:3000"
 
     # CORS
     # Accetta CSV (es. "http://localhost:3000,http://127.0.0.1:3000")

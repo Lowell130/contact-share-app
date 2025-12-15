@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Header
 from ..deps import get_current_user
+from ..config import settings
 from ..db import get_db
 from ..utils import now_utc
 import stripe
@@ -35,8 +36,8 @@ async def create_checkout_session(user=Depends(get_current_user)):
                 },
             ],
             mode='subscription',
-            success_url='http://localhost:3000/payment/success', # TODO: Env var for base URL
-            cancel_url='http://localhost:3000/payment/cancel',
+            success_url=f'{settings.FRONTEND_URL}/payment/success',
+            cancel_url=f'{settings.FRONTEND_URL}/payment/cancel',
             client_reference_id=str(user["id"]),
             customer_email=user["email"],
             metadata={
