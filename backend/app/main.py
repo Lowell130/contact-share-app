@@ -12,9 +12,21 @@ app = FastAPI(title="Contact Share API", version="0.1.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+# Definiamo le origini obbligatorie per la produzione
+required_origins = [
+    "https://www.getcontactshare.com",
+    "https://getcontactshare.com",
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000"
+]
+
+# Uniamo quelle da configurazione (se presenti) con quelle obbligatorie
+# set() per evitare duplicati
+allowed_origins = list(set((settings.CORS_ORIGINS or []) + required_origins))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS or ["http://localhost:3000", "http://127.0.0.1:3000", "https://www.getcontactshare.com", "https://getcontactshare.com"],
+    allow_origins=allowed_origins,
     allow_origin_regex=settings.CORS_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
