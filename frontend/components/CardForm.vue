@@ -266,7 +266,7 @@
             <option value="modern_orange" :disabled="!isPro">Modern Orange {{ !isPro ? '🔒' : '' }}</option>
           </optgroup>
         </select>
-        <div class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-center justify-between">
+        <div v-if="!isPro" class="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-100 flex items-center justify-between">
         <div>
            <p class="text-sm text-blue-800 font-medium">Upgrade to Pro</p>
            <p class="text-xs text-blue-600">Unlock all premium themes and more.</p>
