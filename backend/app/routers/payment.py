@@ -54,11 +54,19 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
     db = get_db()
     config = await db.settings.find_one({"_id": "config"})
     
+    print("🔔 Webhook received!")  # Debug log
+    
     if not config:
+        print("❌ No config found in database")
         return {} # Silent fail per sicurezza
-        
+    
     endpoint_secret = config.get("stripe_webhook_secret")
+    if not endpoint_secret:
+        print("❌ No webhook secret configured")
+        return {}
+    
     payload = await request.body()
+    print(f"📦 Payload size: {len(payload)} bytes")
 
     event = None
 
@@ -66,19 +74,26 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
         event = stripe.Webhook.construct_event(
             payload, stripe_signature, endpoint_secret
         )
+        print(f"✅ Webhook signature verified")
     except ValueError as e:
+        print(f"❌ Invalid payload: {e}")
         raise HTTPException(400, detail="Invalid payload")
     except stripe.error.SignatureVerificationError as e:
+        print(f"❌ Invalid signature: {e}")
         raise HTTPException(400, detail="Invalid signature")
 
     event_type = event['type']
+    print(f"📨 Event type: {event_type}")
 
     # Handle checkout completion
     if event_type == 'checkout.session.completed':
         session = event['data']['object']
+        print(f"💳 Checkout session: {session.get('id')}")
         
         # Fulfill the purchase
         user_id = session.get("client_reference_id") or session.get("metadata", {}).get("user_id")
+        print(f"👤 User ID from session: {user_id}")
+        
         if user_id:
             from bson import ObjectId
             
@@ -86,7 +101,10 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
             customer_id = session.get('customer')
             subscription_id = session.get('subscription')
             
-            await db.users.update_one(
+            print(f"🆔 Customer ID: {customer_id}")
+            print(f"🆔 Subscription ID: {subscription_id}")
+            
+            result = await db.users.update_one(
                 {"_id": ObjectId(user_id)},
                 {"$set": {
                     "plan": "pro",
@@ -96,11 +114,17 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
                     "updated_at": now_utc()
                 }}
             )
+            
+            print(f"✅ User updated: matched={result.matched_count}, modified={result.modified_count}")
+        else:
+            print("⚠️ No user_id found in session!")
 
     # Handle subscription deletion (cancellation)
     elif event_type == 'customer.subscription.deleted':
         subscription = event['data']['object']
         subscription_id = subscription['id']
+        
+        print(f"🗑️ Subscription deleted: {subscription_id}")
         
         # Find user by subscription_id
         user = await db.users.find_one({"stripe_subscription_id": subscription_id})
@@ -113,12 +137,17 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
                     "updated_at": now_utc()
                 }}
             )
+            print(f"✅ User downgraded to free")
+        else:
+            print(f"⚠️ No user found with subscription_id: {subscription_id}")
 
     # Handle subscription updates
     elif event_type == 'customer.subscription.updated':
         subscription = event['data']['object']
         subscription_id = subscription['id']
         status = subscription['status']  # active, canceled, past_due, etc.
+        
+        print(f"🔄 Subscription updated: {subscription_id}, status: {status}")
         
         user = await db.users.find_one({"stripe_subscription_id": subscription_id})
         if user:
@@ -133,8 +162,13 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
                     "updated_at": now_utc()
                 }}
             )
+            print(f"✅ User plan updated to: {new_plan}")
+        else:
+            print(f"⚠️ No user found with subscription_id: {subscription_id}")
 
+    print("✅ Webhook processed successfully")
     return {"status": "success"}
+
 
 @router.post("/portal")
 async def create_portal_session(user=Depends(get_current_user)):

@@ -2,14 +2,14 @@
 export const useAuth = () => {
   const accessToken = useState('auth_access', () => '')
   const refreshToken = useState('auth_refresh', () => '')
-  const user        = useState('auth_user',   () => null)
-  const ready       = useState('auth_ready',  () => false)
+  const user = useState('auth_user', () => null)
+  const ready = useState('auth_ready', () => false)
 
   const isLoggedIn = computed(() => !!accessToken.value)
 
   const loadFromStorage = () => {
     if (process.client) {
-      accessToken.value  = localStorage.getItem('access_token')  || ''
+      accessToken.value = localStorage.getItem('access_token') || ''
       refreshToken.value = localStorage.getItem('refresh_token') || ''
       const raw = localStorage.getItem('user')
       user.value = raw ? JSON.parse(raw) : null
@@ -19,18 +19,18 @@ export const useAuth = () => {
 
   const persist = () => {
     if (!process.client) return
-    if (accessToken.value)  localStorage.setItem('access_token', accessToken.value)
-    else                    localStorage.removeItem('access_token')
+    if (accessToken.value) localStorage.setItem('access_token', accessToken.value)
+    else localStorage.removeItem('access_token')
 
     if (refreshToken.value) localStorage.setItem('refresh_token', refreshToken.value)
-    else                    localStorage.removeItem('refresh_token')
+    else localStorage.removeItem('refresh_token')
 
-    if (user.value)         localStorage.setItem('user', JSON.stringify(user.value))
-    else                    localStorage.removeItem('user')
+    if (user.value) localStorage.setItem('user', JSON.stringify(user.value))
+    else localStorage.removeItem('user')
   }
 
   const setTokens = (access, refresh = '') => {
-    accessToken.value  = access || ''
+    accessToken.value = access || ''
     refreshToken.value = refresh || ''
     persist()
   }
@@ -41,9 +41,9 @@ export const useAuth = () => {
   }
 
   const logout = async () => {
-    accessToken.value  = ''
+    accessToken.value = ''
     refreshToken.value = ''
-    user.value         = null
+    user.value = null
     persist()
   }
 
@@ -103,6 +103,23 @@ export const useAuth = () => {
     return { Authorization: `Bearer ${accessToken.value}` }
   }
 
+  // 🆕 Refresh user data from server
+  const refreshUser = async () => {
+    if (!accessToken.value) return null
+
+    const config = useRuntimeConfig()
+    try {
+      const me = await $fetch(`${config.public.apiBase}/me`, {
+        headers: { Authorization: `Bearer ${accessToken.value}` }
+      })
+      setUser(me)
+      return me
+    } catch (e) {
+      console.error('Failed to refresh user:', e)
+      return null
+    }
+  }
+
   if (process.client && !ready.value) {
     loadFromStorage()
     window.addEventListener('storage', () => loadFromStorage())
@@ -118,6 +135,7 @@ export const useAuth = () => {
     login,
     register,   // 👈 AGGIUNTO QUI
     logout,
+    refreshUser, // 🆕 AGGIUNTO
     // vari
     setTokens,
     setUser,

@@ -64,11 +64,16 @@
 
 <script setup>
 const { $api } = useApi()
-const { logout, user } = useAuth()
+const { logout, user, refreshUser } = useAuth()
 const router = useRouter()
 const toast = useToast()
 
 const loading = ref(false)
+
+// Refresh user data when returning from Stripe portal
+onMounted(async () => {
+  await refreshUser()
+})
 
 const manageSubscription = async () => {
   loading.value = true

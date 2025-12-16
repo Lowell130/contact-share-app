@@ -26,9 +26,10 @@
 </template>
 
 <script setup>
-const { user, isLoggedIn } = useAuth()
-// Idealmente ricarichiamo lo user per aggiornare il piano
-onMounted(() => {
-    // hack per forzare refresh se necessario, ma useAuth dovrebbe farlo
+const { user, isLoggedIn, refreshUser } = useAuth()
+
+// Refresh user data to get updated plan
+onMounted(async () => {
+  await refreshUser()
 })
 </script>
