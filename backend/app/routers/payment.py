@@ -71,17 +71,94 @@ async def stripe_webhook(request: Request, stripe_signature: str = Header(None))
     except stripe.error.SignatureVerificationError as e:
         raise HTTPException(400, detail="Invalid signature")
 
-    # Handle the event
-    if event['type'] == 'checkout.session.completed':
+    event_type = event['type']
+
+    # Handle checkout completion
+    if event_type == 'checkout.session.completed':
         session = event['data']['object']
         
         # Fulfill the purchase
         user_id = session.get("client_reference_id") or session.get("metadata", {}).get("user_id")
         if user_id:
-             from bson import ObjectId
-             await db.users.update_one(
-                 {"_id": ObjectId(user_id)},
-                 {"$set": {"plan": "pro", "updated_at": now_utc()}}
-             )
+            from bson import ObjectId
+            
+            # Get customer_id and subscription_id from session
+            customer_id = session.get('customer')
+            subscription_id = session.get('subscription')
+            
+            await db.users.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {
+                    "plan": "pro",
+                    "stripe_customer_id": customer_id,
+                    "stripe_subscription_id": subscription_id,
+                    "subscription_status": "active",
+                    "updated_at": now_utc()
+                }}
+            )
+
+    # Handle subscription deletion (cancellation)
+    elif event_type == 'customer.subscription.deleted':
+        subscription = event['data']['object']
+        subscription_id = subscription['id']
+        
+        # Find user by subscription_id
+        user = await db.users.find_one({"stripe_subscription_id": subscription_id})
+        if user:
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {
+                    "plan": "free",
+                    "subscription_status": "canceled",
+                    "updated_at": now_utc()
+                }}
+            )
+
+    # Handle subscription updates
+    elif event_type == 'customer.subscription.updated':
+        subscription = event['data']['object']
+        subscription_id = subscription['id']
+        status = subscription['status']  # active, canceled, past_due, etc.
+        
+        user = await db.users.find_one({"stripe_subscription_id": subscription_id})
+        if user:
+            # If status is "active", user is PRO
+            new_plan = "pro" if status == "active" else "free"
+            
+            await db.users.update_one(
+                {"_id": user["_id"]},
+                {"$set": {
+                    "plan": new_plan,
+                    "subscription_status": status,
+                    "updated_at": now_utc()
+                }}
+            )
 
     return {"status": "success"}
+
+@router.post("/portal")
+async def create_portal_session(user=Depends(get_current_user)):
+    """Create a Stripe Customer Portal session for subscription management"""
+    db = get_db()
+    
+    # Get Stripe configuration
+    config = await get_stripe_config(db)
+    stripe.api_key = config["stripe_secret_key"]
+    
+    # Get user's customer_id
+    from bson import ObjectId
+    user_doc = await db.users.find_one({"_id": ObjectId(user["id"])})
+    
+    if not user_doc or not user_doc.get("stripe_customer_id"):
+        raise HTTPException(400, detail="No active subscription found")
+    
+    # Create portal session
+    try:
+        portal_session = stripe.billing_portal.Session.create(
+            customer=user_doc["stripe_customer_id"],
+            return_url=f'{settings.FRONTEND_URL}/account',
+        )
+        return {"url": portal_session.url}
+    except Exception as e:
+        raise HTTPException(400, detail=str(e))
+
