@@ -4,7 +4,7 @@
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-heading">Analytics Dashboard</h1>
       <p class="text-body mt-2">
-        Monitora le performance della tua card e l'engagement degli utenti.
+Track your card’s performance and user engagement.
       </p>
     </div>
 
@@ -22,13 +22,13 @@
     </div>
 
     <div v-else class="space-y-6">
-      <!-- KPI Cards -->
+      <!-- KPI Cards (Always visible for all users) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- KPI 1 -->
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-body">Visite Totali</p>
+              <p class="text-sm font-medium text-body">Total Views</p>
               <h3 class="text-2xl font-bold text-heading mt-2">{{ data.total_views }}</h3>
             </div>
             <div class="p-2 bg-blue-50 rounded-lg dark:bg-blue-900/20">
@@ -48,7 +48,7 @@
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-body">vCard Scaricate</p>
+              <p class="text-sm font-medium text-body">vCard Downloads</p>
               <h3 class="text-2xl font-bold text-heading mt-2">{{ data.total_vcard }}</h3>
             </div>
             <div class="p-2 bg-purple-50 rounded-lg dark:bg-purple-900/20">
@@ -65,7 +65,7 @@
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-body">Visite (7gg)</p>
+              <p class="text-sm font-medium text-body">Views (7d)</p>
               <h3 class="text-2xl font-bold text-heading mt-2">{{ data.views_7d }}</h3>
             </div>
             <div class="p-2 bg-green-50 rounded-lg dark:bg-green-900/20">
@@ -73,7 +73,7 @@
             </div>
           </div>
           <div class="mt-4 flex items-center text-sm">
-            <span class="text-body">Trend settimanale</span>
+            <span class="text-body">Weekly trend</span>
           </div>
         </div>
 
@@ -81,7 +81,7 @@
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
           <div class="flex justify-between items-start">
             <div>
-              <p class="text-sm font-medium text-body">Paesi Unici</p>
+              <p class="text-sm font-medium text-body">Unique Countries</p>
               <h3 class="text-2xl font-bold text-heading mt-2">{{ data.top_countries.length }}</h3>
             </div>
             <div class="p-2 bg-orange-50 rounded-lg dark:bg-orange-900/20">
@@ -94,60 +94,101 @@
         </div>
       </div>
 
-      <!-- MAIN CHART (User Template) -->
-      <div class="w-full bg-neutral-primary-soft border border-default rounded-base shadow-xs p-4 md:p-6">
-        <div class="flex justify-between items-start">
-          <div>
-            <h5 class="text-2xl font-semibold text-heading">{{ totalLast30d }}</h5>
-            <p class="text-body">Visite ultimi 30 giorni</p>
+      <!-- 🆕 UPGRADE BOX FOR FREE USERS -->
+      <div v-if="!isPro" class="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-8 text-center">
+        <div class="max-w-2xl mx-auto">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
           </div>
-          <div class="flex items-center px-2.5 py-0.5 font-medium text-fg-success text-center bg-success-soft rounded-full">
-            <svg class="w-5 h-5 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v13m0-13 4 4m-4-4-4 4"/></svg>
-            Active
-          </div>
-        </div>
-        
-        <!-- Chart Container -->
-        <div ref="chartEl" class=""></div>
-        
-        <div class="grid grid-cols-1 items-center border-light border-t justify-between mt-4">
-          <div class="flex justify-between items-center pt-4 md:pt-6">
-            <!-- Button -->
-            <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown" data-dropdown-placement="bottom" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
-                Ultimi 30 giorni
-                <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
-            </button>
-            <!-- Dropdown menu (Static for now) -->
-            <div id="lastDaysdropdown" class="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
-                <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownDefaultButton">
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Ultimi 7 giorni</a></li>
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Ultimi 30 giorni</a></li>
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Ultimi 90 giorni</a></li>
-                </ul>
+          
+          <h3 class="text-2xl font-bold text-gray-900 mb-2">Unlock Advanced Analytics</h3>
+          <p class="text-gray-600 mb-6">
+            Upgrade to PRO to access detailed charts, device analysis, geographic data, referrers, and social clicks.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-3 justify-center items-center mb-4">
+            <div class="flex items-center text-sm text-gray-700">
+              <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Interactive charts
             </div>
-            <a href="#" class="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
-              Report Completo
-              <svg class="w-4 h-4 ms-1.5 -me-0.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
-            </a>
+            <div class="flex items-center text-sm text-gray-700">
+              <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Device analysis
+            </div>
+            <div class="flex items-center text-sm text-gray-700">
+              <svg class="w-5 h-5 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+              Geographic data
+            </div>
           </div>
+          
+          <NuxtLink 
+            to="/upgrade"
+            class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+          >
+            Upgrade to PRO - €4.99/month
+            <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </NuxtLink>
         </div>
       </div>
+
+      <!-- 🔒 ADVANCED ANALYTICS (PRO ONLY) -->
+      <template v-if="isPro">
+        <!-- MAIN CHART (User Template) -->
+        <div class="w-full bg-neutral-primary-soft border border-default rounded-base shadow-xs p-4 md:p-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <h5 class="text-2xl font-semibold text-heading">{{ totalLast30d }}</h5>
+              <p class="text-body">Views last 30 days</p>
+            </div>
+            <div class="flex items-center px-2.5 py-0.5 font-medium text-fg-success text-center bg-success-soft rounded-full">
+              <svg class="w-5 h-5 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v13m0-13 4 4m-4-4-4 4"/></svg>
+              Active
+            </div>
+          </div>
+          
+          <!-- Chart Container -->
+          <div ref="chartEl" class=""></div>
+          
+          <div class="grid grid-cols-1 items-center border-light border-t justify-between mt-4">
+            <div class="flex justify-between items-center pt-4 md:pt-6">
+              <!-- Button -->
+              <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown" data-dropdown-placement="bottom" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
+                  Last 30 days
+                  <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+              </button>
+              <!-- Dropdown menu (Static for now) -->
+              <div id="lastDaysdropdown" class="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
+                  <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownDefaultButton">
+                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
+                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
+                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 90 days</a></li>
+                  </ul>
+              </div>
+              <a href="#" class="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
+                Full Report
+                <svg class="w-4 h-4 ms-1.5 -me-0.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
 
       <!-- SECONDARY GRIDS -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- DEVICE CHART -->
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
-          <h3 class="text-lg font-bold text-heading mb-4">Dispositivi</h3>
+          <h3 class="text-lg font-bold text-heading mb-4">Devices</h3>
           <div v-if="hasDeviceData" ref="deviceChartEl" class="h-64"></div>
-          <div v-else class="h-64 flex items-center justify-center text-body text-sm">Dati insufficienti</div>
+          <div v-else class="h-64 flex items-center justify-center text-body text-sm">Insufficient data</div>
         </div>
 
         <!-- GEO CHART -->
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
-          <h3 class="text-lg font-bold text-heading mb-4">Provenienza</h3>
+          <h3 class="text-lg font-bold text-heading mb-4">Geographic Origin</h3>
           <div v-if="hasGeoData" ref="geoChartEl"></div>
-          <div v-else class="flex items-center justify-center text-body text-sm">Dati insufficienti</div>
+          <div v-else class="flex items-center justify-center text-body text-sm">Insufficient data</div>
         </div>
       </div>
 
@@ -167,7 +208,7 @@
         </div>
         
         <p class="text-sm text-body mb-4">
-          Click effettuati sui link social e personali presenti nella tua card.
+          Clicks on social and personal links in your card.
         </p>
 
         <div v-if="hasSocialData" class="space-y-4">
@@ -195,21 +236,21 @@
           <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-full mb-3">
             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
           </div>
-          <p class="text-body text-sm">Nessun click sui social</p>
+          <p class="text-body text-sm">No social clicks yet</p>
         </div>
           
         <div class="grid grid-cols-1 items-center border-light border-t justify-between mt-4">
           <div class="flex justify-between items-center pt-4 md:pt-6">
             <!-- Button -->
             <button id="dropdownLastDays3Button" data-dropdown-toggle="LastDays3dropdown" data-dropdown-placement="bottom" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
-                Ultimi 30 giorni
+                Last 30 days
                 <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
             </button>
             <!-- Dropdown menu -->
             <div id="LastDays3dropdown" class="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
                 <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownLastDays3Button">
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Ultimi 7 giorni</a></li>
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Ultimi 30 giorni</a></li>
+                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
+                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
                 </ul>
             </div>
             <a href="#" class="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
@@ -230,7 +271,7 @@
               <div class="flex items-center space-x-3">
                 <div class="text-body p-1.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg" v-html="getReferrerIcon(r.ref)"></div>
                 <span class="font-medium text-heading text-sm">
-                  {{ r.ref === 'direct' ? 'Diretto / Nessun referrer' : r.ref }}
+                  {{ r.ref === 'direct' ? 'Direct / No referrer' : r.ref }}
                 </span>
               </div>
               <div class="text-right">
@@ -249,12 +290,14 @@
           <div class="p-3 bg-gray-50 dark:bg-gray-800 rounded-full mb-3">
             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
           </div>
-          <p class="text-body text-sm">Nessun dato sui referrer disponibile</p>
+          <p class="text-body text-sm">No referrer data available</p>
         </div>
       </div>
 
-    </div>
+    </template>
+    <!-- End PRO-only sections -->
 
+    </div>
 
     
   </section>
@@ -267,6 +310,10 @@ import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 
 const route = useRoute()
 const { $api } = useApi()
+const { user } = useAuth()
+
+// Check if user is PRO
+const isPro = computed(() => user.value?.plan === 'pro' || user.value?.plan === 'admin')
 
 const data = ref(null)
 const error = ref('')
@@ -488,12 +535,12 @@ const labelDevice = (kind) => {
   if (kind === 'mobile') return 'Mobile'
   if (kind === 'desktop') return 'Desktop'
   if (kind === 'tablet') return 'Tablet'
-  return 'Altro'
+  return 'Other'
 }
 
 const labelSocial = (t) => {
   const k = (t || '').toLowerCase()
-  if (!k || k === 'unknown') return 'Altro'
+  if (!k || k === 'unknown') return 'Other'
   const map = {
     facebook: 'Facebook', instagram: 'Instagram', linkedin: 'LinkedIn',
     x: 'X', twitter: 'X', github: 'GitHub', youtube: 'YouTube',
