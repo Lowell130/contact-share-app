@@ -1,6 +1,6 @@
 <template>
   <section v-if="card" class="flex justify-center pt-6">
-    <div class="w-full max-w-4xl">
+    <div class="w-full max-w-[1800px] px-4">
 
       <h1 class="text-2xl font-bold mb-4 text-center">Edit Card</h1>
       <CardForm v-model="form" :cardId="card.id" @submit="save" />

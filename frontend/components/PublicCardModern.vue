@@ -1,7 +1,7 @@
 <!-- components/PublicCardModern.vue -->
 <template>
   <section class="bg-white dark:bg-gray-900">
-    <div class="flex items-center justify-center min-h-screen py-6">
+    <div class="flex items-center justify-center min-h-full py-6">
       <!-- Main Card Container -->
       <div
         class="bg-white p-6 rounded-lg shadow-lg dark:bg-gray-900 border-solid border border-gray-200"
@@ -342,13 +342,74 @@ const THEMES = {
     btnHoverText: "text-gray-700 hover:text-orange-700",
     btnHoverBg: "hover:bg-orange-50",
     btnRing: "focus:ring-2 focus:ring-orange-500/20"
+  },
+  // === LEGACY / EXTRA THEMES ===
+  minimal: {
+    badgeBg: "bg-gray-100",
+    badgeText: "text-gray-700",
+    badgeRing: "ring-gray-500/10",
+    iconBg: "bg-gray-100",
+    iconText: "text-gray-600",
+    linkHover: "hover:decoration-gray-400 hover:text-gray-900",
+    accentText: "text-gray-900",
+    gradientBox: "bg-white border-gray-200",
+    btnHoverText: "text-gray-700 hover:text-black",
+    btnHoverBg: "hover:bg-gray-100",
+    btnRing: "focus:ring-2 focus:ring-gray-500/20"
+  },
+  dark: {
+    badgeBg: "bg-gray-800",
+    badgeText: "text-gray-200",
+    badgeRing: "ring-gray-700",
+    iconBg: "bg-gray-800",
+    iconText: "text-gray-300",
+    linkHover: "hover:decoration-gray-500 hover:text-white",
+    accentText: "text-white",
+    gradientBox: "bg-gray-800 border-gray-700",
+    btnHoverText: "text-gray-300 hover:text-white",
+    btnHoverBg: "hover:bg-gray-700",
+    btnRing: "focus:ring-2 focus:ring-gray-500/50"
+  },
+  gradient: {
+    badgeBg: "bg-orange-50",
+    badgeText: "text-orange-700",
+    badgeRing: "ring-orange-500/20",
+    iconBg: "bg-gradient-to-br from-pink-500 to-orange-400",
+    iconText: "text-white",
+    linkHover: "hover:decoration-orange-400 hover:text-orange-600",
+    accentText: "text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-orange-400",
+    gradientBox: "bg-gradient-to-br from-pink-50/50 via-white to-orange-50/50",
+    btnHoverText: "text-gray-700 hover:text-orange-700",
+    btnHoverBg: "hover:bg-orange-50",
+    btnRing: "focus:ring-2 focus:ring-orange-500/20"
+  },
+  flowbite: { // Forest
+    badgeBg: "bg-green-50",
+    badgeText: "text-green-800",
+    badgeRing: "ring-green-600/20",
+    iconBg: "bg-green-100",
+    iconText: "text-green-700",
+    linkHover: "hover:decoration-green-500 hover:text-green-800",
+    accentText: "text-green-800",
+    gradientBox: "bg-gradient-to-br from-green-50 via-white to-green-100",
+    btnHoverText: "text-green-800 hover:text-green-900",
+    btnHoverBg: "hover:bg-green-100",
+    btnRing: "focus:ring-2 focus:ring-green-500/20"
   }
 };
 
 const colors = computed(() => {
-  // Estrae "emerald" da "modern_emerald"
-  const suffix = (props.themeName || "").split("_")[1] || "emerald"; // default fallback
-  return THEMES[suffix] || THEMES.emerald;
+  const t = props.themeName || "emerald";
+  
+  // 1. Direct match (e.g. "minimal", "dark")
+  if (THEMES[t]) return THEMES[t];
+
+  // 2. Suffix match (e.g. "modern_blue" -> "blue")
+  const suffix = t.split("_")[1];
+  if (suffix && THEMES[suffix]) return THEMES[suffix];
+
+  // 3. Fallback
+  return THEMES.emerald;
 });
 
 /* --------------------------------
