@@ -140,7 +140,7 @@ Track your card’s performance and user engagement.
           <div class="flex justify-between items-start">
             <div>
               <h5 class="text-2xl font-semibold text-heading">{{ totalLast30d }}</h5>
-              <p class="text-body">Views last 30 days</p>
+              <p class="text-body">Views last {{ selectedDays }} days</p>
             </div>
             <div class="flex items-center px-2.5 py-0.5 font-medium text-fg-success text-center bg-success-soft rounded-full">
               <svg class="w-5 h-5 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v13m0-13 4 4m-4-4-4 4"/></svg>
@@ -154,21 +154,23 @@ Track your card’s performance and user engagement.
           <div class="grid grid-cols-1 items-center border-light border-t justify-between mt-4">
             <div class="flex justify-between items-center pt-4 md:pt-6">
               <!-- Button -->
-              <button id="dropdownDefaultButton" data-dropdown-toggle="lastDaysdropdown" data-dropdown-placement="bottom" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
-                  Last 30 days
-                  <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
-              </button>
-              <!-- Dropdown menu (Static for now) -->
-              <div id="lastDaysdropdown" class="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
-                  <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownDefaultButton">
-                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
-                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
-                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 90 days</a></li>
-                  </ul>
+              <div class="relative">
+                <button @click="isDropdownOpen = !isDropdownOpen" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
+                    Last {{ selectedDays }} days
+                    <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+                </button>
+                <!-- Dropdown menu -->
+                <div v-if="isDropdownOpen" class="absolute z-10 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44 mt-2">
+                    <ul class="p-2 text-sm text-body font-medium">
+                      <li><a href="#" @click.prevent="setDays(7); isDropdownOpen=false" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
+                      <li><a href="#" @click.prevent="setDays(30); isDropdownOpen=false" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
+                      <li><a href="#" @click.prevent="setDays(90); isDropdownOpen=false" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 90 days</a></li>
+                    </ul>
+                </div>
               </div>
-              <a href="#" class="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
-                Full Report
-                <svg class="w-4 h-4 ms-1.5 -me-0.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
+              <a href="#" @click.prevent="exportCsv" class="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
+                Full Report (CSV)
+                <svg class="w-4 h-4 ms-1.5 -me-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/></svg>
               </a>
             </div>
           </div>
@@ -184,8 +186,15 @@ Track your card’s performance and user engagement.
           <div v-else class="h-64 flex items-center justify-center text-body text-sm">Insufficient data</div>
         </div>
 
-        <!-- GEO CHART -->
+        <!-- OS CHART -->
         <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6">
+          <h3 class="text-lg font-bold text-heading mb-4">Operating Systems</h3>
+          <div v-if="hasOsData" ref="osChartEl" class="h-64"></div>
+          <div v-else class="h-64 flex items-center justify-center text-body text-sm">Insufficient data</div>
+        </div>
+
+        <!-- GEO CHART -->
+        <div class="bg-neutral-primary-soft border border-default rounded-base shadow-xs p-6 lg:col-span-2">
           <h3 class="text-lg font-bold text-heading mb-4">Geographic Origin</h3>
           <div v-if="hasGeoData" ref="geoChartEl"></div>
           <div v-else class="flex items-center justify-center text-body text-sm">Insufficient data</div>
@@ -242,16 +251,18 @@ Track your card’s performance and user engagement.
         <div class="grid grid-cols-1 items-center border-light border-t justify-between mt-4">
           <div class="flex justify-between items-center pt-4 md:pt-6">
             <!-- Button -->
-            <button id="dropdownLastDays3Button" data-dropdown-toggle="LastDays3dropdown" data-dropdown-placement="bottom" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
-                Last 30 days
-                <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
-            </button>
-            <!-- Dropdown menu -->
-            <div id="LastDays3dropdown" class="z-10 hidden bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
-                <ul class="p-2 text-sm text-body font-medium" aria-labelledby="dropdownLastDays3Button">
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
-                  <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
-                </ul>
+            <div class="relative">
+              <button @click="isSocialDropdownOpen = !isSocialDropdownOpen" class="text-sm font-medium text-body hover:text-heading text-center inline-flex items-center" type="button">
+                  Last 30 days
+                  <svg class="w-4 h-4 ms-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/></svg>
+              </button>
+              <!-- Dropdown menu -->
+              <div v-if="isSocialDropdownOpen" class="absolute z-10 bottom-full mb-2 bg-neutral-primary-medium border border-default-medium rounded-base shadow-lg w-44">
+                  <ul class="p-2 text-sm text-body font-medium">
+                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 7 days</a></li>
+                    <li><a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Last 30 days</a></li>
+                  </ul>
+              </div>
             </div>
             <a href="#" class="inline-flex items-center text-fg-brand bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
               Social Report
@@ -310,25 +321,30 @@ import { ref, computed, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
 
 const route = useRoute()
 const { $api } = useApi()
-const { user } = useAuth()
+const { user, accessToken } = useAuth()
 
 // Check if user is PRO
 const isPro = computed(() => user.value?.plan === 'pro' || user.value?.plan === 'admin')
 
 const data = ref(null)
 const error = ref('')
+const selectedDays = ref(30)
+const isDropdownOpen = ref(false)
+const isSocialDropdownOpen = ref(false)
 
 // Chart Elements
 const chartEl = ref(null)
 const deviceChartEl = ref(null)
 const socialChartEl = ref(null)
 const geoChartEl = ref(null)
+const osChartEl = ref(null)
 
 // Chart Instances
 let chartInstance = null
 let deviceChartInstance = null
 let socialChartInstance = null
 let geoChartInstance = null
+let osChartInstance = null
 
 // Load ApexCharts dynamically
 let ApexChartsLib = null
@@ -343,7 +359,7 @@ const getApex = async () => {
 const fetchAnalytics = async () => {
   try {
     error.value = ''
-    data.value = await $api(`/analytics/cards/${route.params.id}/summary`)
+    data.value = await $api(`/analytics/cards/${route.params.id}/summary?days=${selectedDays.value}`)
     if (process.client) {
       await nextTick()
       await initAllCharts()
@@ -352,6 +368,34 @@ const fetchAnalytics = async () => {
     console.error(e)
     error.value = 'Impossibile caricare le analytics.'
   }
+}
+
+const setDays = (d) => {
+    selectedDays.value = d
+    fetchAnalytics()
+}
+
+const exportCsv = async () => {
+    if (!isPro.value) return
+    try {
+        const token = accessToken.value 
+        const res = await fetch(`${useRuntimeConfig().public.apiBase}/analytics/cards/${route.params.id}/export?days=${selectedDays.value}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        if (!res.ok) throw new Error("Export failed")
+        
+        const blob = await res.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `analytics_${route.params.id}_${selectedDays.value}d.csv`
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+    } catch(e) {
+        console.error("CSV Export error", e)
+        alert("Export failed")
+    }
 }
 
 onMounted(fetchAnalytics)
@@ -465,6 +509,19 @@ const deviceChartOptions = computed(() => {
   }
 })
 
+const hasOsData = computed(() => !!data.value?.os_breakdown?.length)
+const osChartOptions = computed(() => {
+  if (!hasOsData.value) return null
+  return {
+    chart: { type: 'pie', height: '100%' },
+    labels: data.value.os_breakdown.map(o => o.os),
+    series: data.value.os_breakdown.map(o => o.count),
+    colors: ['#8b5cf6', '#ec4899', '#06b6d4', '#84cc16', '#64748b'],
+    legend: { position: 'bottom' },
+    dataLabels: { enabled: false }
+  }
+})
+
 const socialChartOptions = computed(() => {
   if (!hasSocialData.value) return null
   return {
@@ -505,6 +562,7 @@ const initAllCharts = async () => {
   if (deviceChartInstance) deviceChartInstance.destroy()
   if (socialChartInstance) socialChartInstance.destroy()
   if (geoChartInstance) geoChartInstance.destroy()
+  if (osChartInstance) osChartInstance.destroy()
 
   if (chartEl.value && chartOptions.value) {
     chartInstance = new ApexCharts(chartEl.value, chartOptions.value)
@@ -513,6 +571,10 @@ const initAllCharts = async () => {
   if (deviceChartEl.value && deviceChartOptions.value) {
     deviceChartInstance = new ApexCharts(deviceChartEl.value, deviceChartOptions.value)
     deviceChartInstance.render()
+  }
+  if (osChartEl.value && osChartOptions.value) {
+    osChartInstance = new ApexCharts(osChartEl.value, osChartOptions.value)
+    osChartInstance.render()
   }
   if (socialChartEl.value && socialChartOptions.value) {
     socialChartInstance = new ApexCharts(socialChartEl.value, socialChartOptions.value)
@@ -527,6 +589,7 @@ const initAllCharts = async () => {
 onBeforeUnmount(() => {
   if (chartInstance) chartInstance.destroy()
   if (deviceChartInstance) deviceChartInstance.destroy()
+  if (osChartInstance) osChartInstance.destroy()
   if (socialChartInstance) socialChartInstance.destroy()
   if (geoChartInstance) geoChartInstance.destroy()
 })

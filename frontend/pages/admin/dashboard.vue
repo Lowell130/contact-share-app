@@ -40,18 +40,138 @@
         </div>
       </div>
     </div>
+
+    <!-- Recent Users Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- New Users -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800">
+                Recent Signups
+            </div>
+            <div class="divide-y divide-gray-100">
+                <div v-for="u in stats.recent_users" :key="u.email" class="px-6 py-3 flex items-center justify-between">
+                    <div>
+                        <div class="font-medium text-gray-800">{{ u.name || 'No Name' }}</div>
+                        <div class="text-xs text-gray-500">{{ u.email }}</div>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        {{ new Date(u.created_at).toLocaleDateString() }}
+                    </div>
+                </div>
+                <div v-if="!stats.recent_users?.length" class="px-6 py-4 text-center text-gray-400 font-bold">
+                    No users yet
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent PRO -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 font-semibold text-gray-800 flex items-center gap-2">
+                <span>Recent PRO Upgrades</span>
+                <span class="px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-700 font-bold">PRO</span>
+            </div>
+             <div class="divide-y divide-gray-100">
+                <div v-for="u in stats.recent_pro_users" :key="u.email" class="px-6 py-3 flex items-center justify-between">
+                    <div>
+                        <div class="font-medium text-gray-800">{{ u.name || 'No Name' }}</div>
+                        <div class="text-xs text-gray-500">{{ u.email }}</div>
+                    </div>
+                     <div class="text-xs text-gray-400">
+                        {{ new Date(u.created_at).toLocaleDateString() }}
+                    </div>
+                </div>
+                 <div v-if="!stats.recent_pro_users?.length" class="px-6 py-4 text-center text-gray-400 font-bold">
+                    No PRO users yet
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">Global Analytics (Last 30 Days)</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Top Countries -->
+            <div>
+                <h4 class="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Top Users Origins</h4>
+                <div v-if="analytics.top_countries?.length" class="space-y-3">
+                    <div v-for="item in analytics.top_countries" :key="item.country" class="relative">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700 flex items-center gap-2">
+                                {{ getFlagEmoji(item.country) }} {{ item.country }}
+                            </span>
+                            <span class="text-gray-500">{{ item.count }}</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div 
+                                class="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                                :style="{ width: `${(item.count / maxCountryCount) * 100}%` }"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+                 <div v-else class="text-gray-400 italic text-sm">No data available</div>
+            </div>
+
+            <!-- Top Referrers -->
+            <div>
+                 <h4 class="text-sm font-semibold text-gray-600 mb-3 uppercase tracking-wide">Top Referrers</h4>
+                 <div v-if="analytics.top_referrers?.length" class="space-y-3">
+                    <div v-for="item in analytics.top_referrers" :key="item.ref" class="relative">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700 truncate max-w-[200px]" :title="item.ref">
+                                {{ item.ref }}
+                            </span>
+                            <span class="text-gray-500">{{ item.count }}</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div 
+                                class="bg-indigo-500 h-2 rounded-full transition-all duration-500"
+                                :style="{ width: `${(item.count / maxRefCount) * 100}%` }"
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="text-gray-400 italic text-sm">No data available</div>
+            </div>
+        </div>
+    </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 const { $api } = useApi()
 
-const stats = ref({ users: 0, cards: 0, pro_users: 0 })
+const stats = ref({ users: 0, cards: 0, pro_users: 0, recent_users: [], recent_pro_users: [] })
+const analytics = ref({ top_countries: [], top_referrers: [], last30d: [] })
+
+const maxCountryCount = computed(() => {
+    if (!analytics.value.top_countries?.length) return 1
+    return Math.max(...analytics.value.top_countries.map(c => c.count))
+})
+
+const maxRefCount = computed(() => {
+     if (!analytics.value.top_referrers?.length) return 1
+    return Math.max(...analytics.value.top_referrers.map(c => c.count))
+})
+
+// Simple flag helper
+const getFlagEmoji = (countryCode) => {
+  if (!countryCode || countryCode === 'unknown') return '🌍'
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char =>  127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
 
 onMounted(async () => {
     try {
         stats.value = await $api('/admin/stats')
+        analytics.value = await $api('/admin/analytics/global')
     } catch(e) {
         console.error("Stats error", e)
     }
