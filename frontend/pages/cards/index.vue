@@ -1,6 +1,6 @@
 <template>
   <section class="flex justify-center pt-6">
-    <div class="w-full max-w-4xl">
+    <div class="w-full max-w-4xl px-4">
       <div class="flex justify-between items-center mb-4">
         <h1 class="text-2xl font-bold">Your cards</h1>
         <NuxtLink
