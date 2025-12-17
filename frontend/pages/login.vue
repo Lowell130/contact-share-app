@@ -49,6 +49,14 @@
             </div>
           </div>
 
+          <div class="flex items-center justify-end">
+            <div class="text-sm">
+              <NuxtLink to="/forgot-password" class="font-medium text-blue-600 hover:text-blue-500">
+                Forgot your password?
+              </NuxtLink>
+            </div>
+          </div>
+
           <div v-if="error" class="rounded-md bg-red-50 p-4">
             <div class="flex">
               <div class="flex-shrink-0">

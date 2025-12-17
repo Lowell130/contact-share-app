@@ -16,6 +16,13 @@ class Settings(BaseSettings):
     ACCESS_EXPIRES_MIN: int = 30
     REFRESH_EXPIRES_DAYS: int = 14
 
+    # Email / SMTP
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    EMAILS_FROM: str = ""
+
     # App
     BASE_URL: Optional[AnyHttpUrl] = None
     # URL pubblico del frontend per redirect post-pagamento

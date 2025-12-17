@@ -90,6 +90,66 @@ async def magic_confirm(data: MagicConfirmIn):
     rid = secrets.token_hex(8)
     return TokenPair(access_token=create_access_token(uid), refresh_token=create_refresh_token(uid, rid))
 
+from ..models import ForgotPasswordIn, ResetPasswordIn
+from ..email import send_email
+from ..config import settings
+
+@router.post("/forgot-password")
+async def forgot_password(data: ForgotPasswordIn):
+    db = get_db()
+    user = await db.users.find_one({"email": data.email})
+    if not user:
+        # Avoid user enumeration: returning OK even if email not found
+        return {"ok": True, "msg": "If the email exists, a reset link has been sent."}
+    
+    # Generate token
+    token = secrets.token_urlsafe(32)
+    await db.reset_tokens.insert_one({
+        "token": token,
+        "user_id": str(user["_id"]),
+        "created_at": now_utc(),
+        "expires_at": now_utc() + timedelta(minutes=30)
+    })
+    
+    link = f"{settings.FRONTEND_URL}/reset-password?token={token}"
+    html = f"""
+    <h3>Password Reset</h3>
+    <p>We received a request to reset your password.</p>
+    <p>Click the link below to set a new password:</p>
+    <a href="{link}">Reset Password</a>
+    <p>This link expires in 30 minutes.</p>
+    """
+    
+    await send_email(data.email, "Reset Password - Contact Share", html)
+    return {"ok": True, "msg": "Reset link sent."}
+
+@router.post("/reset-password")
+async def reset_password(data: ResetPasswordIn):
+    db = get_db()
+    
+    # Validate token
+    t = await db.reset_tokens.find_one({"token": data.token})
+    now = now_utc()
+    
+    if not t:
+        raise HTTPException(400, "Invalid token")
+    if t["expires_at"] < now:
+        await db.reset_tokens.delete_one({"_id": t["_id"]})
+        raise HTTPException(400, "Token expired")
+    
+    uid = t["user_id"]
+    new_hash = hash_password(data.new_password)
+    
+    await db.users.update_one(
+        {"_id": ObjectId(uid)},
+        {"$set": {"password_hash": new_hash}}
+    )
+    
+    # Consuma il token
+    await db.reset_tokens.delete_one({"_id": t["_id"]})
+    
+    return {"ok": True, "msg": "Password updated successfully"}
+
 @router.delete("/me")
 async def delete_account(user=Depends(get_current_user)):
     db = get_db()

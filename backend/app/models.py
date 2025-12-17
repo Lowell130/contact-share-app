@@ -18,6 +18,13 @@ class LoginIn(BaseModel):
     email: EmailStr
     password: str
 
+class ForgotPasswordIn(BaseModel):
+    email: EmailStr
+
+class ResetPasswordIn(BaseModel):
+    token: str
+    new_password: str
+
 class TokenPair(BaseModel):
     access_token: str
     refresh_token: str
