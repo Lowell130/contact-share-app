@@ -14,7 +14,7 @@ Track your card’s performance and user engagement.
       class="p-4 mb-6 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400"
       role="alert"
     >
-      <span class="font-medium">Errore!</span> {{ error }}
+      <span class="font-medium">Error!</span> {{ error }}
     </div>
 
     <div v-else-if="!data" class="flex justify-center py-12">
