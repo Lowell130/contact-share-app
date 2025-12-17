@@ -1,6 +1,6 @@
 <!-- pages/dashboard.vue -->
 <template>
-  <section class="max-w-5xl mx-auto py-8">
+  <section class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
     <!-- Header di Benvenuto -->
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
