@@ -3,7 +3,8 @@ from fastapi import APIRouter, HTTPException, Depends, status, Body
 from fastapi.responses import JSONResponse
 from pydantic import EmailStr
 from bson import ObjectId
-from datetime import timedelta
+from datetime import timedelta, timezone
+import logging
 import secrets
 from ..db import get_db
 from ..models import UserIn, LoginIn, TokenPair, MagicRequestIn, MagicConfirmIn
@@ -125,30 +126,44 @@ async def forgot_password(data: ForgotPasswordIn):
 
 @router.post("/reset-password")
 async def reset_password(data: ResetPasswordIn):
-    db = get_db()
-    
-    # Validate token
-    t = await db.reset_tokens.find_one({"token": data.token})
-    now = now_utc()
-    
-    if not t:
-        raise HTTPException(400, "Invalid token")
-    if t["expires_at"] < now:
+    logger = logging.getLogger("uvicorn.error")
+    try:
+        db = get_db()
+        
+        # Validate token
+        t = await db.reset_tokens.find_one({"token": data.token})
+        now = now_utc()
+        
+        if not t:
+            raise HTTPException(400, "Invalid token")
+        
+        # FIX: Ensure timezone awareness
+        expires_at = t["expires_at"]
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+
+        if expires_at < now:
+            await db.reset_tokens.delete_one({"_id": t["_id"]})
+            raise HTTPException(400, "Token expired")
+        
+        uid = t["user_id"]
+        new_hash = hash_password(data.new_password)
+        
+        await db.users.update_one(
+            {"_id": ObjectId(uid)},
+            {"$set": {"password_hash": new_hash}}
+        )
+        
+        # Consuma il token
         await db.reset_tokens.delete_one({"_id": t["_id"]})
-        raise HTTPException(400, "Token expired")
-    
-    uid = t["user_id"]
-    new_hash = hash_password(data.new_password)
-    
-    await db.users.update_one(
-        {"_id": ObjectId(uid)},
-        {"$set": {"password_hash": new_hash}}
-    )
-    
-    # Consuma il token
-    await db.reset_tokens.delete_one({"_id": t["_id"]})
-    
-    return {"ok": True, "msg": "Password updated successfully"}
+        
+        return {"ok": True, "msg": "Password updated successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error resetting password: {e}", exc_info=True)
+        # Re-raise as 500 so client sees error, but logs contain detail
+        raise HTTPException(status_code=500, detail="Internal Server Error during password reset")
 
 @router.delete("/me")
 async def delete_account(user=Depends(get_current_user)):
